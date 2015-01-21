@@ -17,7 +17,7 @@ Displays a stream of badge statements including the badge image and signed state
 ### badges.php
 Displays all Open Badges earned by the user in a dashboard. These are downloadable. 
 
-## Reource components
+## Resource components
 
 ### assertions.php
 Recieves querystring paramaters, querries the LRS for a matching statement and returns either assertion JSON or an error. 
@@ -32,3 +32,9 @@ Recieves querystring paramaters, returns hard coded badge criteria as human read
 An example issuer organization to be used in badges. 
 
 ## Libs
+
+### TinCanPHP (folder)
+External library for sending and recieving Tin Can statements. 
+
+### badges-lib.php
+Functions relating to baking and signing of badges. 
