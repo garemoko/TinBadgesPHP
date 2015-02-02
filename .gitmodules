@@ -1,3 +1,9 @@
 [submodule "TinCanPHP"]
 	path = TinCanPHP
 	url = https://github.com/RusticiSoftware/TinCanPHP.git
+[submodule "TinCanStatementViewer"]
+	path = TinCanStatementViewer
+	url = https://github.com/RusticiSoftware/TinCanStatementViewer.git
+[submodule "TinCanJS"]
+	path = TinCanJS
+	url = https://github.com/RusticiSoftware/TinCanJS.git

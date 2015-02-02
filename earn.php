@@ -40,7 +40,7 @@ if (isset($_POST["badge"])){
         ),
         "object" => array(
             "id" =>  "http://example.com/badge/1", //TODO: id of badge goes here. 
-            "definition" => array(
+            "definition" => array( //TODO: add badge name and description
                 "type" => "http://activitystrea.ms/schema/1.0/badge"
             )
         ),
