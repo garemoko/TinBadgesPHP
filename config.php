@@ -10,4 +10,6 @@ $CFG->version = "1.0.0";
 $CFG->readonly_login = "";
 $CFG->readonly_pass = "";
 
+$CFG->wwwroot = "http://example.com/TinBadges";
+
 ?>

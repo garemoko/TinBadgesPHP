@@ -21,6 +21,7 @@ if (isset($_POST["badge"])){
     $badge = $_POST["badge"];
 
     $lrs = new \TinCan\RemoteLRS();
+    $tinCanPHPUtil = new \TinCan\Util();
     $lrs
         ->setEndPoint($CFG->endpoint)
         ->setAuth($CFG->login,$CFG->pass)
@@ -28,7 +29,12 @@ if (isset($_POST["badge"])){
 
     //issue a statement to say the user launched this prototype. 
 
-    $statement = array( 
+    $readonly_auth = 'Basic ' . base64_encode($CFG->readonly_login . ':' . $CFG->readonly_pass); 
+
+    $statementId = $tinCanPHPUtil->getUUID();
+
+    $statement = array(
+        "id"=> $statementId,
         "actor" => array(
             "mbox"=> "mailto:".$userEmail,
             "name"=> $userName
@@ -41,17 +47,19 @@ if (isset($_POST["badge"])){
             ),
         ),
         "object" => array(
-            "id" =>  "http://example.com/badge/1", //TODO: id of badge goes here. 
-            "definition" => array( //TODO: add badge name and description
+            "id" =>  $CFG->wwwroot . "/resources/badge-class.php?badge-id=1",
+            "definition" => array( //TODO: add badge name and description? 
                 "type" => "http://activitystrea.ms/schema/1.0/badge"
             )
         ),
-        "context" => array(
+        "result" => array(
             "extensions" => array(
                 "http://standard.openbadges.org/xapi/extensions/badgeassertion.json" => array(
-                    "@id" => "http://example.com/assertion/1" //TODO: URL of hosted badge assertion goes here
+                    "@id" => $CFG->wwwroot . "/resources/assertions.php?statement=" . urlencode($statementId) . "&endpoint=" . urlencode($CFG->endpoint) . "&auth=" . urlencode($readonly_auth)
                 )
-            ),
+            )
+        ),
+        "context" => array(
             "contextActivities" => array(
                 "category" => array(
                     array( //TODO: Host metadata at standard.openbadges.org and update this to version 1 for release version of recipe
