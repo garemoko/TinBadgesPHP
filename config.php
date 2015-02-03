@@ -10,6 +10,8 @@ $CFG->version = "1.0.0";
 $CFG->readonly_login = "";
 $CFG->readonly_pass = "";
 
-$CFG->wwwroot = "http://example.com/TinBadges";
+$CFG->wwwroot = "http://localhost:8888/TinBadgesPHP";
+
+$CFG->badge_salt = "badge_salt";
 
 ?>

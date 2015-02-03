@@ -18,11 +18,14 @@ if (isset($_GET["badge-id"])){
 //TODO: combine badge data for badge-class.php and badge-definition.php in a separate file and return the appropriate format
 $badges = array(
     "1" => array(
-        "name" => "Example Tin Badge number one",
-        "description" => "The first example Tin Badge",
-        "image" => $CFG->wwwroot ."/badges/badge-one.png",
-        "criteria" => $CFG->wwwroot ."/resources/criteria.php?badge-id=1",
-        "issuer" => $CFG->wwwroot ."/resources/issuer-organization.json"
+        "name" => array("en"=>"Example Tin Badge number one"),
+        "description" => array("en"=>"The first example Tin Badge"),
+        "type" => "http://activitystrea.ms/schema/1.0/badge"
+        "extensions" => array(
+            "http://standard.openbadges.org/xapi/extensions/badgeclass.json" => array(
+                "@id" => $CFG->wwwroot . "/resources/badge-class.php?badge-id=1"
+            )
+        )
     )
 );
 
