@@ -22,7 +22,6 @@ TODO: display an icon indicating whether or not the statement has been signed an
 </p>
 
 <script src="TinCanStatementViewer/scripts/jquery-1.6.3.min.js"></script>
-<script src="TinCanStatementViewer/scripts/tabs.js"></script>
 <script src="TinCanStatementViewer/scripts/base64.js"></script>
 <script src="TinCanJS/build/tincan-min.js"></script>
 <script src="TinCanStatementViewer/scripts/TinCanQueryUtils.js"></script>
@@ -48,7 +47,7 @@ TODO: display an icon indicating whether or not the statement has been signed an
 <div id='statementsLoading'>
     <img src="TinCanStatementViewer/img/loading.gif" alt="Loading">
 </div>
-<button id='showAllStatements'>More...</button>
+<button id='showAllStatements' class="btn btn-info">More...</button>
 
 
 <script>
@@ -83,78 +82,8 @@ TODO: display an icon indicating whether or not the statement has been signed an
             }
         );
 
-        $("#version").change(
-            function (e) {
-                var version = $(e.target.options[e.target.selectedIndex]).val(),
-                    searchBoxTable = $("#searchBoxTable"),
-                    advancedSearchTable = $("#advancedSearchTable"),
-                    searchBoxTable1 = $("#searchBoxTable1"),
-                    advancedSearchTable1 = $("#advancedSearchTable1");
-
-                if (version === "0.9" || version === "0.95" || version === "0.95 + 0.9") {
-                    if (searchBoxTable1.is(":visible")) {
-                        searchBoxTable1.toggle("slow");
-                        searchBoxTable.toggle("slow");
-
-                        if (advancedSearchTable1.is(":visible")) {
-                            advancedSearchTable1.toggle("slow");
-                            advancedSearchTable.toggle("slow");
-                        }
-                    }
-                }
-                else {
-                    if (searchBoxTable.is(":visible")) {
-                        searchBoxTable.toggle("slow");
-                        searchBoxTable1.toggle("slow");
-
-                        if (advancedSearchTable.is(":visible")) {
-                            advancedSearchTable.toggle("slow");
-                            advancedSearchTable1.toggle("slow");
-                        }
-                    }
-                }
-
-                doRefresh();
-            }
-        );
-
-        $("#showAdvancedOptions").click(
-            function () {
-                var version = $("#version").val(),
-                    node;
-
-                if (version === "0.9" || version === "0.95" || version === "0.95 + 0.9") {
-                    node = $("#advancedSearchTable");
-                }
-                else {
-                    node = $("#advancedSearchTable1");
-                }
-
-                node.toggle(
-                    'slow',
-                    function () {
-                        var visible = node.is(":visible"),
-                            text = (visible ? "Hide" : "Show") + " Advanced Options";
-
-                        $("#showAdvancedOptions").html(text);
-                    }
-                );
-            }
-        );
-
-        $("#showQuery").click(
-            function () {
-                $("#TCAPIQuery").toggle(
-                    'slow',
-                    function () {
-                        var visible = $("#TCAPIQuery").is(":visible"),
-                            text = (visible ? "Hide" : "Show") + " TCAPI Query";
-                        $("#showQuery").html(text);
-                    }
-                );
-            }
-        );
-
         TC_VIEWER.searchStatements();
+        $(".tc_rawdata").remove();
+
     });
 </script>

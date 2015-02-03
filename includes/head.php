@@ -18,6 +18,30 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style>
+      .panel { padding-bottom: 20px; }
+
+      #theStatements table { width: 100%; }
+
+      .statement {margin:3px 0;}
+
+      .statement table {width:100%;}
+      .statementRow td {vertical-align:middle;padding:2px;}
+      .statementRow td.date{width:140px;}
+
+      .statementRow .date {font-size:.7em;color:#666666;}
+      .statement .actor {color:#222222;}
+      .statement .verb {font-weight:bold;}
+      .statement .object {color:#222222;}
+      .statement .score {font-weight:bold;}
+
+      .statement {cursor:pointer;}
+      .tc_rawdata {display:none; font-size:.8em; width:800px; word-wrap:break-word;}
+
+      #statementsLoading { padding-left:20px; padding-top:10px; display:none; }
+      #showAllStatements { display:none; margin-top:10px}
+
+    </style>
   </head>
   <body>
     <div class="container">

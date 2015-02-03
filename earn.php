@@ -10,6 +10,8 @@ include "includes/head.php";
 include "config.php";
 require ("TinCanPHP/autoload.php");
 
+//TODO: redirect the user to index.php if email and name are not provided
+    //TODO: include a validation message
 $userEmail = $_POST["email"];
 $userName = $_POST["name"];
 
@@ -96,7 +98,6 @@ if (isset($_POST["badge"])){
         <?php include "badges.php"; ?>
     </div>
 </div>
-<hr/>
 <div class="row">
     <div class="col-md-12 panel panel-default">
         <?php include "stream.php"; ?>
