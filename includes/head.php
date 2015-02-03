@@ -39,7 +39,11 @@
       .tc_rawdata {display:none; font-size:.8em; width:800px; word-wrap:break-word;}
 
       #statementsLoading { padding-left:20px; padding-top:10px; display:none; }
-      #showAllStatements { display:none; margin-top:10px}
+      #showAllStatements { display:none; margin-top:10px;}
+
+      .open-badge-150 {height: 150px; width:150px;}
+      .open-badge-100 {height: 100px; width:100px; margin:1px;}
+      .earn-btn {clear:both;margin:10px auto 0 auto;}
 
     </style>
   </head>

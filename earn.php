@@ -17,17 +17,16 @@ require ("TinCanPHP/autoload.php");
 $userEmail = $_POST["email"];
 $userName = $_POST["name"];
 
+$lrs = new \TinCan\RemoteLRS();
+$tinCanPHPUtil = new \TinCan\Util();
+$lrs
+    ->setEndPoint($CFG->endpoint)
+    ->setAuth($CFG->login,$CFG->pass)
+    ->setversion($CFG->version);
 
 if (isset($_POST["badge"])){
 //In a production example, this page would include security checks. 
     $badge = $_POST["badge"];
-
-    $lrs = new \TinCan\RemoteLRS();
-    $tinCanPHPUtil = new \TinCan\Util();
-    $lrs
-        ->setEndPoint($CFG->endpoint)
-        ->setAuth($CFG->login,$CFG->pass)
-        ->setversion($CFG->version);
 
     //issue a statement to say the user launched this prototype. 
 
@@ -38,6 +37,7 @@ if (isset($_POST["badge"])){
     $statement = new \TinCan\statement(
         array(
             "id"=> $statementId,
+            "timestamp" => (new \DateTime())->format('c'), 
             "actor" => array(
                 "mbox"=> "mailto:".$userEmail,
                 "name"=> $userName
@@ -45,13 +45,14 @@ if (isset($_POST["badge"])){
             "verb" => array(
                 "id" => "http://standard.openbadges.org/xapi/verbs/earned.json",
                 "display" => array(
-                    "en-US" => "earned",
-                    "en-GB" => "earned",
+                    "en" => "earned",
                 ),
             ),
             "object" => array(
                 "id" =>  $CFG->wwwroot . "/resources/badge-defintion.php?badge-id=1",
-                "definition" => array( //TODO: add badge name and description? 
+                "definition" => array( //TODO: add badge name and description?
+                    "name" => array("en"=>"Example Tin Badge number one"),
+                    "description" => array("en"=>"The first example Tin Badge"),
                     "type" => "http://activitystrea.ms/schema/1.0/badge",
                     "extensions" => array(
                         "http://standard.openbadges.org/xapi/extensions/badgeclass.json" => array(
@@ -85,28 +86,16 @@ if (isset($_POST["badge"])){
     //Build the badge
     $assertion = statementToAssertion($statement);
 
-    /*$iTXtChunk = array(
-        "keyword" => "openbadges",
-        "compression" => 0,
-        "compressionMethod" => 0,
-        "languageTag" => '',
-        "translatedKeyword" => '',
-        "text" => json_encode($assertion, JSON_UNESCAPED_SLASHES);
-    );*/
-
 //TODO: rename these variables
-    $sourcePNGFile = file_get_contents($CFG->wwwroot ."/badges/badge-one.png");
+    $sourcePNG = file_get_contents($CFG->wwwroot ."/badges/badge-one.png");
 
-    $sourcePNG = new PNG_MetaDataHandler($sourcePNGFile);
+    $metadatahandler = new PNG_MetaDataHandler($sourcePNG);
 
-    if ($sourcePNG->check_chunks("tEXt", "openbadge")) {
-        $badgePNG = $sourcePNG->add_chunks("tEXt", "openbadges", json_encode($assertion, JSON_UNESCAPED_SLASHES));
+    if ($metadatahandler->check_chunks("iTXt", "openbadge")) {
+        $badgePNG = $metadatahandler->add_chunks("iTXt", "openbadges", json_encode($assertion, JSON_UNESCAPED_SLASHES));
     } else {
         //TODO: error - there's a problem with the input image. Is this already a baked Open Badge? It should be a normal png.
     }
-
-echo ("<img alt='My Image' src='data:image/png;base64," . base64_encode($badgePNG) . "' />");
-
 
     //TODO: add badge as attachment
     //TODO: sign statement
@@ -126,13 +115,17 @@ echo ("<img alt='My Image' src='data:image/png;base64," . base64_encode($badgePN
             This page similuates a user (<?php echo $userEmail ?>) logged into an LMS earning a badge. Badges can be earned by completing 
             some kind of signnificant achievement, but today you"ll earn a badge by clicking a button! 
         </p>
-        <img src="/badges/badge-one.png" class="badge">
-        <form action="earn.php" method="post">
-            <input type="hidden" class="form-control" id="name" name="name" value="<?php echo $userName ?>">
-            <input type="hidden" class="form-control" id="email" name="email" value="<?php echo $userEmail ?>">
-            <input type="hidden" class="form-control" id="badge" name="badge" value="badge1">
-            <button type="submit" class="btn btn-primary">Earn!</button>
-        </form>
+        <div class="row">
+            <div class="col-md-3 text-center">
+                <img src="badges/badge-one.png" class="open-badge-150 center-block">
+                <form action="earn.php" method="post">
+                    <input type="hidden" class="form-control" id="name" name="name" value="<?php echo $userName ?>">
+                    <input type="hidden" class="form-control" id="email" name="email" value="<?php echo $userEmail ?>">
+                    <input type="hidden" class="form-control" id="badge" name="badge" value="badge1">
+                    <button type="submit" class="btn btn-primary earn-btn">Earn!</button>
+                </form>
+            </div>
+        </div>
     </div>
     <div class="col-md-4 panel panel-default">
         <?php include "badges.php"; ?>
