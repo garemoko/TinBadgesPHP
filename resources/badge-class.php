@@ -15,7 +15,8 @@ if (isset($_GET["badge-id"])){
     die();
 }
 
-//TODO: combine badge data for badge-class.php and badge-definition.php in a separate file and return the appropriate format
+//TODO: combine badge data for badge-class.php and badge-definition.php in a separate location and return the appropriate format
+//TODO: consider storing badge class data in the LRS either as a statement or in the Activity Profile API
 $badges = array(
     "1" => array(
         "name" => "Example Tin Badge number one",

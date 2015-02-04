@@ -48,7 +48,7 @@ if (isset($_POST["badge"])){
             ),
             "object" => array(
                 "id" =>  $CFG->wwwroot . "/resources/badge-defintion.php?badge-id=1",
-                "definition" => array( //TODO: add badge name and description?
+                "definition" => array( //TODO: store definition centrally with badge-definition.php
                     "name" => array("en"=>"Example Tin Badge number one"),
                     "description" => array("en"=>"The first example Tin Badge"),
                     "type" => "http://activitystrea.ms/schema/1.0/badge",
@@ -84,16 +84,11 @@ if (isset($_POST["badge"])){
     //Build the badge
     $assertion = statementToAssertion($statement);
 
-//TODO: rename these variables
-    $sourcePNG = file_get_contents($CFG->wwwroot ."/badges/badge-one.png");
+    //echo (json_encode($assertion, JSON_UNESCAPED_SLASHES));
 
-    $metadatahandler = new PNG_MetaDataHandler($sourcePNG);
+    $badgePNG = bakeBadge($CFG->wwwroot ."/badges/badge-one.png", $assertion);
 
-    if ($metadatahandler->check_chunks("iTXt", "openbadge")) {
-        $badgePNG = $metadatahandler->add_chunks("iTXt", "openbadges", json_encode($assertion, JSON_UNESCAPED_SLASHES));
-    } else {
-        //TODO: error - there's a problem with the input image. Is this already a baked Open Badge? It should be a normal png.
-    }
+    //echo ("<img src='data:image/png;base64,".base64_encode($badgePNG)."'>");
 
     //TODO: add badge as attachment
     //TODO: sign statement

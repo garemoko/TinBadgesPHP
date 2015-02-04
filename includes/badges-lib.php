@@ -7,6 +7,10 @@ Functions relating to baking and signing of badges.
 
 function statementToAssertion($statement){
     global $CFG;
+
+    //TODO: validate that the actor uses mbox
+    // TODO: support other IFIs
+
     $assertion = array(
         "uid" => $statement->getId(),
         "recipient" => array(
@@ -16,9 +20,24 @@ function statementToAssertion($statement){
             "salt" => $CFG->badge_salt
         ),
         "badge" => $statement->getObject()->getDefinition()->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["@id"],
-        "verify" => $statement->getResult()->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeassertion.json"]["@id"],
+        "verify" => array(
+            "type" => "hosted",
+            "url" => $statement->getResult()->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeassertion.json"]["@id"],
+        ),
         "issuedOn" => $statement->getTimestamp()
         //TODO: (optional) "evidence" =>,
     );
     return $assertion;
+}
+
+function bakeBadge($imageURL, $assertion){
+    $sourcePNG = file_get_contents($imageURL);
+
+    $metadatahandler = new PNG_MetaDataHandler($sourcePNG);
+
+    if ($metadatahandler->check_chunks("iTXt", "openbadge")) {
+        return $metadatahandler->add_chunks("iTXt", "openbadges", json_encode($assertion, JSON_UNESCAPED_SLASHES));
+    } else {
+        //TODO: error - there's a problem with the input image. Is this already a baked Open Badge? It should be a normal png.
+    }
 }

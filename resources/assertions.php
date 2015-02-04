@@ -2,7 +2,7 @@
 
 /*
 ### assertions.php
-Recieves querystring paramaters, querries the LRS for a matching statement and returns either assertion JSON or an error. 
+Recieves statement id querystring paramater, querries the LRS for a matching statement and returns either assertion JSON or an error. 
 */
 include "../config.php";
 require ("../TinCanPHP/autoload.php");
@@ -18,10 +18,11 @@ if (isset($_GET["statement"])){
     die();
 }
 
-//TODO: Currently the page will work with any LRS, which is nice but could be a security issue. 
-    //Add a whitelist of allowed LRS endpoints to config.php
-    //Think of a plan to support Learning Locker which shares an endpoint between multi-tenanted LRSs
-        //White listing auth key/secret combinations?
+/* 
+* I considered including LRS detals in the assertion querystring so this page could work with any LRS but concluded 
+* that this was too big a security risk. Each LRS or LRS-using badging application can easily implement this resource in 
+* order to support LRS-hosted badge assertions. 
+*/
 
 $lrs = new \TinCan\RemoteLRS();;
 $lrs
@@ -30,9 +31,6 @@ $lrs
     ->setAuth($CFG->login,$CFG->pass)
 
 $statementResponse = $lrs->retrieveStatement($statementId);
-
-//TODO: validate that the actor uses mbox
-//TODO: support other IFIs
 
 if ($statementResponse->success){
     $statement = $statementResponse->content;
