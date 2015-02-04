@@ -30,8 +30,6 @@ if (isset($_POST["badge"])){
 
     //issue a statement to say the user launched this prototype. 
 
-    $readonly_auth = 'Basic ' . base64_encode($CFG->readonly_login . ':' . $CFG->readonly_pass); 
-
     $statementId = $tinCanPHPUtil->getUUID();
 
     $statement = new \TinCan\statement(
@@ -64,7 +62,7 @@ if (isset($_POST["badge"])){
             "result" => array(
                 "extensions" => array(
                     "http://standard.openbadges.org/xapi/extensions/badgeassertion.json" => array(
-                        "@id" => $CFG->wwwroot . "/resources/assertions.php?statement=" . urlencode($statementId) . "&endpoint=" . urlencode($CFG->endpoint) . "&auth=" . urlencode($readonly_auth)
+                        "@id" => $CFG->wwwroot . "/resources/assertions.php?statement=" . urlencode($statementId)
                     )
                 )
             ),

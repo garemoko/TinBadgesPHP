@@ -10,21 +10,24 @@ include "../includes/badges-lib.php";
 
 header('Content-Type: application/json');
 
-if (isset($_GET["statement"]) && isset($_GET["endpoint"]) && isset($_GET["auth"])){
+if (isset($_GET["statement"])){
     $statementId = urldecode($_GET["statement"]);
-    $endpoint = urldecode($_GET["endpoint"]);
-    $auth = urldecode($_GET["auth"]);
 } else {
     header("HTTP/1.1 400 Bad Request");
     http_response_code(400);
     die();
 }
 
+//TODO: Currently the page will work with any LRS, which is nice but could be a security issue. 
+    //Add a whitelist of allowed LRS endpoints to config.php
+    //Think of a plan to support Learning Locker which shares an endpoint between multi-tenanted LRSs
+        //White listing auth key/secret combinations?
+
 $lrs = new \TinCan\RemoteLRS();;
 $lrs
     ->setEndPoint($endpoint)
-    ->setAuth($auth)
-    ->setversion($CFG->version);
+    ->setEndPoint($CFG->endpoint)
+    ->setAuth($CFG->login,$CFG->pass)
 
 $statementResponse = $lrs->retrieveStatement($statementId);
 
