@@ -12,7 +12,7 @@ $queryStatementsResponse = $lrs->queryStatements(
         "verb" => new \TinCan\Verb(array("id"=> "http://standard.openbadges.org/xapi/verbs/earned.json")),
         "activity" => new \TinCan\Activity(array("id"=> "http://standard.openbadges.org/xapi/recipe/base/0")),
         "related_activities" => "true",
-        "format"=>"ids", //we don't need activity defitinions
+        "format"=>"exact", //we don't need activity defitinions
         "attachments"=>"false" //No need to get the attachments, we can re-bake the badge based on info in the statement. 
     )
 );
@@ -40,8 +40,8 @@ foreach ($queryStatements as $queryStatement){
 
 <?php 
     foreach ($unqiueEarnStatements as $unqiueEarnStatement){
-        $assertion = statementToAssertion($statement);
-        $badgeClass = json_decode(file_get_contents($statement->getObject()->getDefinition()->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["@id"]));
+        $assertion = statementToAssertion($unqiueEarnStatement);
+        $badgeClass = json_decode(file_get_contents($unqiueEarnStatement->getObject()->getDefinition()->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["@id"]));
         $badgeImageURL = $badgeClass->image;
         $displayBadge = bakeBadge($badgeImageURL, $assertion);
         echo "<img class='open-badge-100 pull-left' src='data:image/png;base64," . base64_encode($displayBadge) . "' />";

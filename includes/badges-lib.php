@@ -35,8 +35,8 @@ function bakeBadge($imageURL, $assertion){
 
     $metadatahandler = new PNG_MetaDataHandler($sourcePNG);
 
-    if ($metadatahandler->check_chunks("iTXt", "openbadge")) {
-        return $metadatahandler->add_chunks("iTXt", "openbadges", json_encode($assertion, JSON_UNESCAPED_SLASHES));
+    if ($metadatahandler->check_chunks("tEXt", "openbadge")) {//TODO: use iTXt (not currently supported by our library) instead
+        return $metadatahandler->add_chunks("tEXt", "openbadges", json_encode($assertion, JSON_UNESCAPED_SLASHES));
     } else {
         //TODO: error - there's a problem with the input image. Is this already a baked Open Badge? It should be a normal png.
     }
