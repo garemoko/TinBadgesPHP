@@ -24,11 +24,10 @@ if (isset($_GET["statement"])){
 * order to support LRS-hosted badge assertions. 
 */
 
-$lrs = new \TinCan\RemoteLRS();;
+$lrs = new \TinCan\RemoteLRS();
 $lrs
-    ->setEndPoint($endpoint)
     ->setEndPoint($CFG->endpoint)
-    ->setAuth($CFG->login,$CFG->pass)
+    ->setAuth($CFG->login,$CFG->pass);
 
 $statementResponse = $lrs->retrieveStatement($statementId);
 

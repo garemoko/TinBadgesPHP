@@ -43,6 +43,7 @@
 
       .open-badge-150 {height: 150px; width:150px;}
       .open-badge-100 {height: 100px; width:100px; margin:1px;}
+      .open-badge-50 {height: 50px; width:50px; margin:1px;}
       .earn-btn {clear:both;margin:10px auto 0 auto;}
 
     </style>

@@ -14,4 +14,6 @@ $CFG->wwwroot = "http://localhost:8888/TinBadgesPHP";
 
 $CFG->badge_salt = "badge_salt";
 
+$CFG->rebakeBadgeToDisplay= true; //If false get the badge from the attachment.  
+
 ?>

@@ -10,6 +10,7 @@ include "includes/head.php";
 include "includes/badges-lib.php";
 include "includes/bakerlib.php"; //from Moodle
 include "config.php";
+include "includes/badge-definitions.php";
 require ("TinCanPHP/autoload.php");
 
 //TODO: redirect the user to index.php if email and name are not provided
@@ -24,11 +25,14 @@ $lrs
     ->setAuth($CFG->login,$CFG->pass)
     ->setversion($CFG->version);
 
+$badgeFiles = array(
+    "1" => $CFG->wwwroot ."/badges/badge-one.png",
+    "2" => $CFG->wwwroot ."/badges/badge-two.png"
+);
+
 if (isset($_POST["badge"])){
 //In a production example, this page would include security checks. 
     $badge = $_POST["badge"];
-
-    //issue a statement to say the user launched this prototype. 
 
     $statementId = $tinCanPHPUtil->getUUID();
 
@@ -47,17 +51,8 @@ if (isset($_POST["badge"])){
                 ),
             ),
             "object" => array(
-                "id" =>  $CFG->wwwroot . "/resources/badge-defintion.php?badge-id=1",
-                "definition" => array( //TODO: store definition centrally with badge-definition.php
-                    "name" => array("en"=>"Example Tin Badge number one"),
-                    "description" => array("en"=>"The first example Tin Badge"),
-                    "type" => "http://activitystrea.ms/schema/1.0/badge",
-                    "extensions" => array(
-                        "http://standard.openbadges.org/xapi/extensions/badgeclass.json" => array(
-                            "@id" => $CFG->wwwroot . "/resources/badge-class.php?badge-id=1"
-                        )
-                    )
-                )
+                "id" =>  $CFG->wwwroot . "/resources/badge-defintion.php?badge-id=".$badge,
+                "definition" => $badgeDefinitions[$badge]
             ),
             "result" => array(
                 "extensions" => array(
@@ -84,11 +79,19 @@ if (isset($_POST["badge"])){
     //Build the badge
     $assertion = statementToAssertion($statement);
 
-    //echo (json_encode($assertion, JSON_UNESCAPED_SLASHES));
-
-    $badgePNG = bakeBadge($CFG->wwwroot ."/badges/badge-one.png", $assertion);
+    $badgePNG = bakeBadge($badgeFiles[$badge], $assertion);
 
     //echo ("<img src='data:image/png;base64,".base64_encode($badgePNG)."'>");
+
+    $statement->setAttachments( array(
+        array(
+            "content" => $badgePNG,
+            "contentType" => "image/png",
+            "usageType" => "http://standard.openbadges.org/xapi/attachment/badge.json",
+            "display" => $badgeDefinitions[$badge]["name"]
+            )
+        )
+    );
 
     //TODO: add badge as attachment
     //TODO: sign statement
@@ -110,11 +113,20 @@ if (isset($_POST["badge"])){
         </p>
         <div class="row">
             <div class="col-md-3 text-center">
-                <img src="badges/badge-one.png" class="open-badge-150 center-block">
+                <img src="<?php echo $badgeFiles["1"] ?>" class="open-badge-150 center-block">
                 <form action="earn.php" method="post">
                     <input type="hidden" class="form-control" id="name" name="name" value="<?php echo $userName ?>">
                     <input type="hidden" class="form-control" id="email" name="email" value="<?php echo $userEmail ?>">
-                    <input type="hidden" class="form-control" id="badge" name="badge" value="badge1">
+                    <input type="hidden" class="form-control" id="badge" name="badge" value="1">
+                    <button type="submit" class="btn btn-primary earn-btn">Earn!</button>
+                </form>
+            </div>
+           <div class="col-md-3 text-center">
+                <img src="<?php echo $badgeFiles["2"] ?>" class="open-badge-150 center-block">
+                <form action="earn.php" method="post">
+                    <input type="hidden" class="form-control" id="name" name="name" value="<?php echo $userName ?>">
+                    <input type="hidden" class="form-control" id="email" name="email" value="<?php echo $userEmail ?>">
+                    <input type="hidden" class="form-control" id="badge" name="badge" value="2">
                     <button type="submit" class="btn btn-primary earn-btn">Earn!</button>
                 </form>
             </div>

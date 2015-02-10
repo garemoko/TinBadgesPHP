@@ -26,6 +26,7 @@ TODO: display an icon indicating whether or not the statement has been signed an
 <script src="TinCanJS/build/tincan-min.js"></script>
 <script src="TinCanStatementViewer/scripts/TinCanQueryUtils.js"></script>
 <script src="TinCanStatementViewer/scripts/TinCanViewer.js"></script>
+<script src="TinCanViewerOverrides.js"></script>
 
 <div id="searchBox" style="display: none;">
     <input type="hidden" id="version" value="<?php echo $CFG->version ?>" />
@@ -39,6 +40,7 @@ TODO: display an icon indicating whether or not the statement has been signed an
     <input id="registration1" type="hidden" value="">
     <input id="relatedAgents" type="hidden">
     <input id="relatedActivities" type="checkbox" checked>
+    <input id="attachments" type="checkbox" checked>
 
     <textarea readonly="true" id="TCAPIQueryText"></textarea>
 
@@ -51,6 +53,7 @@ TODO: display an icon indicating whether or not the statement has been signed an
 
 
 <script>
+//TODO: but this in a separate js file
     function Config() {
         "use strict";
     }
@@ -61,29 +64,16 @@ TODO: display an icon indicating whether or not the statement has been signed an
 
     $(document).ready(function(){
         TC_VIEWER = new TINCAN.Viewer();
-        doRefresh = function () {
-            $("#statementsLoading").show();
-            $("#showAllStatements").hide();
-            $("#noStatementsMessage").hide();
-            $("#theStatements").empty();
-            tcViewer.searchStatements();
-        };
-
-        $("#statementsLoading").show();
-        $("#showAllStatements").hide();
-        $("#noStatementsMessage").hide();
-
-        $("#refreshStatements").click(doRefresh);
-
-        $("#showAllStatements").click(
-            function () {
-                $("#statementsLoading").show();
-                TC_VIEWER.getMoreStatements();
-            }
-        );
-
+        TC_VIEWER.pageInitialize();
         TC_VIEWER.searchStatements();
-        $(".tc_rawdata").remove();
+        $(".statement").each(function(index){
+            console.log("statement");
+            displayAttachments($(this));
+        });
 
     });
+
+    function displayAttachments(statementElement){
+        var statement = new TinCan.Statement(statementElement.next(".tc_rawdata").children("pre").text());
+    }
 </script>

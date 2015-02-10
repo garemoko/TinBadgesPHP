@@ -16,13 +16,23 @@ if (isset($_GET["badge-id"])){
 }
 
 //TODO: combine badge data for badge-class.php and badge-definition.php in a separate location and return the appropriate format
-//TODO: consider storing badge class data in the LRS either as a statement or in the Activity Profile API
+    //TODO: consider storing badge class data in the LRS either as a statement or in the Activity Profile API
+        //TODO: Use Accept-language to return the canonical activity definition in the requested language, thus solving localization
+        // of Badge classes in Open Badges
+
 $badges = array(
     "1" => array(
         "name" => "Example Tin Badge number one",
         "description" => "The first example Tin Badge",
         "image" => $CFG->wwwroot ."/badges/badge-one.png",
         "criteria" => $CFG->wwwroot ."/resources/criteria.php?badge-id=1",
+        "issuer" => $CFG->wwwroot ."/resources/issuer-organization.json"
+    ),
+        "2" => array(
+        "name" => "Example Tin Badge number two",
+        "description" => "The second example Tin Badge",
+        "image" => $CFG->wwwroot ."/badges/badge-two.png",
+        "criteria" => $CFG->wwwroot ."/resources/criteria.php?badge-id=2",
         "issuer" => $CFG->wwwroot ."/resources/issuer-organization.json"
     )
 );
