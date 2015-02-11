@@ -131,10 +131,28 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
     function displayBagde(statementId){
         return function(badgePNG) {
           //display image
-          console.log(badgePNG);
-          $("[tcid='" + statementId + "']").append("<img class='open-badge-50' src='data:image/png;base64," + badgePNG + "' />");
+            var statmentObj = $("[tcid='" + statementId + "']");
+            var imgHTML = "<img class='open-badge-50' src='data:image/png;base64," + badgePNG + "' />"
+            if (statmentObj.has( ".label" ).length){
+                statmentObj.children( ".label" ).before(imgHTML);
+            } else {
+                statmentObj.append(imgHTML);
+            }
         }
     }
+
+    function renderVerification(statementId){
+        return function(verifyResult) {
+          console.log($("[tcid='" + statementId + "']"));
+            if (verifyResult.success) {
+                $("[tcid='" + statementId + "']").append("<span class='label label-success'>Signature Verified</span>");
+            } else {
+                $("[tcid='" + statementId + "']").append("<span class='label label-danger'>Invalid Signature</span>");
+            }
+        }
+    }
+
+    //TODO: Sometimes the badge renders first, sometimes the verification image does. Fix it so they always render in the same order. 
 
     allStmtStr = [];
     allStmtStr.push("<table>");
@@ -204,6 +222,11 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
                         //TODO: validate the image type is image/PNG
                         //Try to get image from content (via PHP as attachments not supported by TinCanJS yet)
                         $.get( "resources/attached-badge.php?statement=" + stmt.id, displayBagde(stmt.id))
+                          .fail(function() {
+                            //TODO: if content not found, try fileurl if present
+                          })
+                    } else if (attachment.usageType == "http://adlnet.gov/expapi/attachments/signature"){
+                        $.get( "resources/verify-signed-statement.php?statement=" + stmt.id, renderVerification(stmt.id))
                           .fail(function() {
                             //TODO: if content not found, try fileurl if present
                           })

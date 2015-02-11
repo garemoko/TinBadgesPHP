@@ -2,6 +2,9 @@
 global $CFG; 
 $CFG = new stdClass();
 
+$CFG->wwwroot = "http://localhost:8888/TinBadgesPHP";
+
+//Tin Can config
 $CFG->endpoint = "http://cloud.scorm.com/ScormEngineInterface/TCAPI/public/";
 $CFG->login = "";
 $CFG->pass = "";
@@ -10,10 +13,11 @@ $CFG->version = "1.0.0";
 $CFG->readonly_login = "";
 $CFG->readonly_pass = "";
 
-$CFG->wwwroot = "http://localhost:8888/TinBadgesPHP";
+//Statement Signing
+$CFG->privateKeyPassPhrase = "magic"; //Note: if you change this, you will also need to create a new private key (privkey.pem) in the "signing" folder. 
+$CFG->simulateFakedSignature = false; //If true, use hackerkey.pem to sign statements. These will NOT verify. 
 
+//Open Badges
 $CFG->badge_salt = "badge_salt";
-
-$CFG->rebakeBadgeToDisplay= true; //If false get the badge from the attachment.  
-
+$CFG->rebakeBadgeToDisplay= true; //If false get the badge from the attachment. 
 ?>

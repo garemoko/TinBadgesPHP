@@ -6,15 +6,28 @@ A simple page allowing the user to click a button and earn a badge. Issues a sig
 Includes stream.php and badges.php as side/bottom blocks or links to them. 
 */
 
+include "config.php";
+if (!(isset($_POST["email"]) && isset($_POST["name"]))){
+    header("Location: ". $CFG->wwwroot);
+}
+
 include "includes/head.php";
 include "includes/badges-lib.php";
 include "includes/bakerlib.php"; //from Moodle
-include "config.php";
 include "includes/badge-definitions.php";
 require ("TinCanPHP/autoload.php");
 
-//TODO: redirect the user to index.php if email and name are not provided
-    //TODO: include a validation message
+//The below requires can be removed once the statement signing features have been merged into TinCanPHP
+require_once "TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Signer/SignerInterface.php";
+require_once "TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Signer/PublicKey.php";
+require_once "TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Signer/RSA.php";
+require_once "TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Signer/RS256.php";
+require_once "TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Base64/Encoder.php";
+require_once "TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Base64/Base64UrlSafeEncoder.php";
+require_once "TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/JWT.php";
+require_once "TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/JWS.php";
+
+
 $userEmail = $_POST["email"];
 $userName = $_POST["name"];
 
@@ -93,14 +106,23 @@ if (isset($_POST["badge"])){
         )
     );
 
-    //TODO: add badge as attachment
-    //TODO: sign statement
+    if ($CFG->simulateFakedSignature){
+        $privKey = "file://signing/hackerkey.pem";
+    } else {
+        $privKey = "file://signing/privkey.pem";
+    }
 
-    $lrs->saveStatement($statement);
-    //TODO: handle errors
+    $statement->sign($privKey, $CFG->privateKeyPassPhrase);
+
+    
+    $response = $lrs->saveStatement($statement);
+    If (!$response->success){
+        echo ("<p class='alert alert-danger' role='alert'>Error communicating with the LRS. Please check your configuration settings.</p>");
+        echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $response->httpResponse["status"] . "<br/>");
+        echo ("<b>Error content:</b> " . $response->content . "</p>");
+    }
 
 }
-
 
 ?>
 
@@ -132,7 +154,7 @@ if (isset($_POST["badge"])){
             </div>
         </div>
     </div>
-    <div class="col-md-4 panel panel-default">
+    <div class="col-md-3 col-md-offset-1 panel panel-default">
         <?php include "badges.php"; ?>
     </div>
 </div>

@@ -21,6 +21,13 @@
     <style>
       .panel { padding-bottom: 20px; }
 
+      .panel-default {
+        border-left:solid 3px #f05023;
+        border-bottom:solid 3px #f05023;
+        border-right:solid 1px #f05023;
+        border-top:solid 1px #f05023;
+      }
+
       #theStatements table { width: 100%; }
 
       .statement {margin:3px 0;}
