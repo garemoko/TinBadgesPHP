@@ -86,7 +86,7 @@ if (isset($_POST["badge"])){
                     )
                 ),
                 "extensions" => array(
-                    "http://id.tincanapi.com/extension/jws-certificate-location" => $CFG->wwwroot . "/resources/get-certificate.php?statement=" . urlencode($statementId)
+                    "http://id.tincanapi.com/extension/jws-certificate-location" => $CFG->wwwroot ."/signing/cacert.pem"
                 )
             )
         )
@@ -125,66 +125,6 @@ if (isset($_POST["badge"])){
         echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $response->httpResponse["status"] . "<br/>");
         echo ("<b>Error content:</b> " . $response->content . "</p>");
     }
-
-//TODO: How does the verifier know which LRS to look this up in? Use an extension and a certifcate-get endpoint
-
-    // Get the authority used to store the statement and store the location of the public certificate in the Agent Profile API
-    // for that authority. Note that in a real system, this process would most likely happen once at the point the credentials are first
-    // received by the AP, rather than whenever a statement is sent as here. 
-
-    $authority = null;
-    if (isset($CFG->authority)){
-        $authority = $CFG->authority;
-    } else {
-        $statementResponse = $lrs->retrieveStatement($statementId);
-
-        if ($statementResponse->success){
-            $statement = $statementResponse->content;
-            $authority = $statement->getAuthority;
-
-        } else  if ($statementResponse->httpResponse["status"] == "404") {
-            echo ("<p class='alert alert-danger' role='alert'>Error retrieving authority from LRS (statement not found). 
-                Set the authority in config.php and try again.</p>");
-        } else {
-            echo ("<p class='alert alert-danger' role='alert'>Error retrieving authority from LRS (unexpected error). 
-                Set the authority in config.php and try again.</p>");
-            echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $statementResponse->httpResponse["status"] . "<br/>");
-            echo ("<b>Error content:</b> " . $statementResponse->content . "</p>");
-        }
-    }
-    
-
-    if ($authority != null) {
-        $getAgentProfileResponse = $lrs->retrieveAgentProfile($authority, "http://id.tincanapi.com/agent-profile/jws-certificate-location");
-        if ($getAgentProfileResponse->success){
-        $agentProfileEtag = $getAgentProfileResponse->content->getEtag();
-
-        //Note: the certificate SHOULD be publically available via the web, at least for this example. 
-        //$certLocation = "file://../signing/cacert.pem";
-        $certLocation = $CFG->wwwroot ."/signing/cacert.pem";
-
-        $setAgentProfileResponse =$lrs->saveAgentProfile(
-            $authority, 
-            "http://id.tincanapi.com/agent-profile/jws-certificate-location", 
-            $certLocation,
-            array(
-                "etag" => $agentProfileEtag,
-                "contentType" => "application/octet-stream"
-            )
-        );
-        if (!$setAgentProfileResponse->success){
-            echo ("<p class='alert alert-danger' role='alert'>Error storing certificate location. 
-            Statement signature verification may not function correctly.</p>");
-            echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $setAgentProfileResponse->httpResponse["status"] . "<br/>");
-            echo ("<b>Error content:</b> " . $setAgentProfileResponse->content . "</p>");
-        }
-        } else {
-            echo ("<p class='alert alert-danger' role='alert'>Error retrieving certificate location eTag. 
-            Statement signature verification may not function correctly.</p>");
-            echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $setAgentProfileResponse->httpResponse["status"] . "<br/>");
-            echo ("<b>Error content:</b> " . $setAgentProfileResponse->content . "</p>");
-        }
-    } 
 }
 
 ?>

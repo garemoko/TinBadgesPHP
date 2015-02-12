@@ -142,16 +142,26 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
     }
 
     function renderVerification(statementId){
+        //TODO: render a revealable raw certifcate box using encodeURIComponent(verifyResult.cert)
         return function(verifyResult) {
             if (verifyResult.success) {
-                $("[tcid='" + statementId + "']").append("<span class='label label-success'>Signature Verified</span>");
+                var verifyLabel = $("<span class='label label-success'>\
+                        Signature Verified: " + verifyResult.certLocation + "\
+                    </span>");
+                $("[tcid='" + statementId + "']").append(verifyLabel);
+                $("[tcid_data='" + statementId + "']").append("<pre>"+verifyResult.cert+"</pre>");
             } else {
                 $("[tcid='" + statementId + "']").append("<span class='label label-danger'>Invalid Signature</span>");
             }
         }
     }
 
-    //TODO: Sometimes the badge renders first, sometimes the verification image does. Fix it so they always render in the same order. 
+    function renderUnableToVerifyV(statementId){
+        //TODO: render a revealable raw certifcate box using verifyResult.cert
+        return function(data) {
+            $("[tcid='" + statementId + "']").append("<span class='label label-warning'>Unable to verify signature.</span>");
+        }
+    }
 
     allStmtStr = [];
     allStmtStr.push("<table>");
@@ -226,10 +236,7 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
                           })
                     } else if (attachment.usageType == "http://adlnet.gov/expapi/attachments/signature"){
                         $.get( "resources/verify-signed-statement.php?statement=" + stmt.id, renderVerification(stmt.id))
-                          .fail(function(data) {
-                            console.log(data);
-                            //TODO: if content not found, try fileurl if present
-                          })
+                          .fail(renderUnableToVerifyV(stmt.id));
                     }
                 })
             }

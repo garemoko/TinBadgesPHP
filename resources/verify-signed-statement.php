@@ -26,7 +26,7 @@ if (isset($_GET["statement"])){
     die();
 }
 
-header('Content-Type: application/json');
+header("Content-Type: application/json");
 
 $lrs = new \TinCan\RemoteLRS();
 $lrs
@@ -37,22 +37,43 @@ $statementResponse = $lrs->retrieveStatement($statementId, array('attachments' =
 
 if ($statementResponse->success){
     $statement = $statementResponse->content;
+    try {
+        $certLocation = $statement->getContext()->getExtensions()->asVersion("1.0.0")["http://id.tincanapi.com/extension/jws-certificate-location"];
+    } catch (Exception $exception) {
+        echo json_encode(
+            array(
+                "success" => false, 
+                "reason" => 'Certificate not found.'
+            ), 
+            JSON_UNESCAPED_SLASHES
+        );
+    }
+    try {
+        $certRaw = file_get_contents($certLocation);
+        $cert = openssl_pkey_get_public(openssl_x509_read($certRaw));
 
-    $certlocation = $statement->getContext()->getExtensions()->asVersion("1.0.0")["http://id.tincanapi.com/extension/jws-certificate-location"];
-
-    $cert = openssl_pkey_get_public(openssl_x509_read(file_get_contents($certlocation)));
-
-    $verifyResponse = $statement->verify(
-        array(
-            'publicKey' => $cert
-        )
-    );
-    echo json_encode($verifyResponse, JSON_UNESCAPED_SLASHES);
+        $verifyResponse = $statement->verify(
+            array(
+                "publicKey" => $cert
+            )
+        );
+        $verifyResponse["cert"] = $certRaw;
+        $verifyResponse["certLocation"] = $certLocation;
+        echo json_encode($verifyResponse, JSON_UNESCAPED_SLASHES);
+    } catch (Exception $exception) {
+        echo json_encode(
+            array(
+                "success" => false, 
+                "reason" => 'Unknown error verifying certificate: '. $exception->getMessage()
+            ), 
+            JSON_UNESCAPED_SLASHES
+        );
+    }
 } else{
     echo json_encode(
         array(
-            'success' => false, 
-            'reason' => 'Target statement not found.'
+            "success" => false, 
+            "reason" => 'Target statement not found.'
         ), 
         JSON_UNESCAPED_SLASHES
     );
