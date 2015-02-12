@@ -15,8 +15,7 @@ if (isset($_GET["badge-id"])){
     die();
 }
 
-//TODO: combine badge data for badge-class.php and badge-definition.php in a separate location and return the appropriate format
-    //TODO: consider storing badge class data in the LRS either as a statement or in the Activity Profile API
+//TODO: use data from badge-definitions.php
         //TODO: Use Accept-language to return the canonical activity definition in the requested language, thus solving localization
         // of Badge classes in Open Badges
 

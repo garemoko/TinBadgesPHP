@@ -1,5 +1,5 @@
 <?php
-//TODO: combine badge data for badge-class.php and badge-definition.php in a separate file and return the appropriate format
+//TODO: consider storing badge class data in the LRS either as a statement or in the Activity Profile API
 
 $badgeDefinitions = array(
     "1" => array(
