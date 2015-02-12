@@ -128,7 +128,7 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
         return response;
     }
 
-    function displayBagde(statementId){
+    function displayBadge(statementId){
         return function(badgePNG) {
           //display image
             var statmentObj = $("[tcid='" + statementId + "']");
@@ -230,7 +230,7 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
                     if (attachment.usageType == "http://standard.openbadges.org/xapi/attachment/badge.json"){
                         //TODO: validate the image type is image/PNG
                         //Try to get image from content (via PHP as attachments not supported by TinCanJS yet)
-                        $.get( "resources/attached-badge.php?statement=" + stmt.id, displayBagde(stmt.id))
+                        $.get( "resources/attached-badge.php?statement=" + stmt.id, displayBadge(stmt.id))
                           .fail(function() {
                             //TODO: if content not found, try fileurl if present
                           })

@@ -69,7 +69,13 @@ foreach ($queryStatements as $queryStatement){
 
         if ($displayBadge == null) {
             $assertion = statementToAssertion($unqiueEarnStatement);
-            $badgeClass = json_decode(file_get_contents($unqiueEarnStatement->getObject()->getDefinition()->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["@id"]));
+            $opts = array(
+                  'http'=>array(
+                        'header'=>"Accept-language: ". $_SERVER['HTTP_ACCEPT_LANGUAGE']
+                  )
+            );
+            $context = stream_context_create($opts);
+            $badgeClass = json_decode(file_get_contents($unqiueEarnStatement->getObject()->getDefinition()->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["@id"], false, $context));
             $badgeImageURL = $badgeClass->image;
             $displayBadge = bakeBadge($badgeImageURL, $assertion);
         } 
