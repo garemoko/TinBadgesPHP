@@ -143,7 +143,6 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
 
     function renderVerification(statementId){
         return function(verifyResult) {
-          console.log($("[tcid='" + statementId + "']"));
             if (verifyResult.success) {
                 $("[tcid='" + statementId + "']").append("<span class='label label-success'>Signature Verified</span>");
             } else {
@@ -227,7 +226,8 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
                           })
                     } else if (attachment.usageType == "http://adlnet.gov/expapi/attachments/signature"){
                         $.get( "resources/verify-signed-statement.php?statement=" + stmt.id, renderVerification(stmt.id))
-                          .fail(function() {
+                          .fail(function(data) {
+                            console.log(data);
                             //TODO: if content not found, try fileurl if present
                           })
                     }

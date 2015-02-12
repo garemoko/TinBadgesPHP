@@ -5,10 +5,16 @@ $CFG = new stdClass();
 $CFG->wwwroot = "http://localhost:8888/TinBadgesPHP";
 
 //Tin Can config
+$CFG->version = "1.0.0"; 
 $CFG->endpoint = "http://cloud.scorm.com/ScormEngineInterface/TCAPI/public/";
 $CFG->login = "";
 $CFG->pass = "";
-$CFG->version = "1.0.0"; 
+$CFG->authority = array( 
+    "account" => array(
+        "homePage" => "http://cloud.scorm.com/",
+        "name" => "anonymous"
+    )
+);
 
 $CFG->readonly_login = "";
 $CFG->readonly_pass = "";

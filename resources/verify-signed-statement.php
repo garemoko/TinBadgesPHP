@@ -37,9 +37,14 @@ $statementResponse = $lrs->retrieveStatement($statementId, array('attachments' =
 
 if ($statementResponse->success){
     $statement = $statementResponse->content;
+
+    $certlocation = $statement->getContext()->getExtensions()->asVersion("1.0.0")["http://id.tincanapi.com/extension/jws-certificate-location"];
+
+    $cert = openssl_pkey_get_public(openssl_x509_read(file_get_contents($certlocation)));
+
     $verifyResponse = $statement->verify(
         array(
-            'publicKey' => "file://../signing/cacert.pem" 
+            'publicKey' => $cert
         )
     );
     echo json_encode($verifyResponse, JSON_UNESCAPED_SLASHES);
@@ -52,9 +57,3 @@ if ($statementResponse->success){
         JSON_UNESCAPED_SLASHES
     );
 }
-
-/*
-    Note that for this example we're using the same public key for all statements. A live system might need to handle statements signed by
-    multiple sources. In this case, you'll need to have the public key for each source and use the right one as appropriate for each statement,
-    most likely using the Authority property to distinguish. 
-*/
