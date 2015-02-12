@@ -133,8 +133,8 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
           //display image
             var statmentObj = $("[tcid='" + statementId + "']");
             var imgHTML = "<img class='open-badge-50' src='data:image/png;base64," + badgePNG + "' />"
-            if (statmentObj.has( ".label" ).length){
-                statmentObj.children( ".label" ).before(imgHTML);
+            if (statmentObj.has( ".verify-label" ).length){
+                statmentObj.children( ".verify-label" ).before(imgHTML);
             } else {
                 statmentObj.append(imgHTML);
             }
@@ -145,13 +145,13 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
         //TODO: render a revealable raw certifcate box using encodeURIComponent(verifyResult.cert)
         return function(verifyResult) {
             if (verifyResult.success) {
-                var verifyLabel = $("<span class='label label-success'>\
-                        Signature Verified: " + verifyResult.certLocation + "\
-                    </span>");
+                var verifyLabel = $("<span class='label label-success verify-label'>Signature Verified: </span>"),
+                verifyURLLabel = $("<span class='label label-default'>"+ verifyResult.certLocation + "</span>")
                 $("[tcid='" + statementId + "']").append(verifyLabel);
+                $("[tcid='" + statementId + "']").append(verifyURLLabel);
                 $("[tcid_data='" + statementId + "']").append("<pre>"+verifyResult.cert+"</pre>");
             } else {
-                $("[tcid='" + statementId + "']").append("<span class='label label-danger'>Invalid Signature</span>");
+                $("[tcid='" + statementId + "']").append("<span class='label label-danger verify-label'>Invalid Signature</span>");
             }
         }
     }
@@ -159,7 +159,7 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
     function renderUnableToVerifyV(statementId){
         //TODO: render a revealable raw certifcate box using verifyResult.cert
         return function(data) {
-            $("[tcid='" + statementId + "']").append("<span class='label label-warning'>Unable to verify signature.</span>");
+            $("[tcid='" + statementId + "']").append("<span class='label label-warning verify-label'>Unable to verify signature.</span>");
         }
     }
 

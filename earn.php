@@ -110,7 +110,7 @@ if (isset($_POST["badge"])){
     );
 
     //Note: in a real system, the private key should NOT be available via the web.
-    if ($CFG->simulateFakedSignature){
+    if (isset($_POST["fakesig"])){
         $privKey = "file://signing/hackerkey.pem";
     } else {
         $privKey = "file://signing/privkey.pem";
@@ -143,6 +143,11 @@ if (isset($_POST["badge"])){
                     <input type="hidden" class="form-control" id="name" name="name" value="<?php echo $userName ?>">
                     <input type="hidden" class="form-control" id="email" name="email" value="<?php echo $userEmail ?>">
                     <input type="hidden" class="form-control" id="badge" name="badge" value="1">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="fakesig" name="fakesig"> Fake signature?
+                        </label>
+                    </div>
                     <button type="submit" class="btn btn-primary earn-btn">Earn!</button>
                 </form>
             </div>
@@ -152,8 +157,26 @@ if (isset($_POST["badge"])){
                     <input type="hidden" class="form-control" id="name" name="name" value="<?php echo $userName ?>">
                     <input type="hidden" class="form-control" id="email" name="email" value="<?php echo $userEmail ?>">
                     <input type="hidden" class="form-control" id="badge" name="badge" value="2">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="fakesig" name="fakesig"> Fake signature?
+                        </label>
+                    </div>
                     <button type="submit" class="btn btn-primary earn-btn">Earn!</button>
                 </form>
+            </div>
+            <div class="col-md-6">
+                <p>
+                    Use the fake signature button to simulate a hacker attempting to issue a badge to <?php echo $userEmail ?>. Badges issued with a 
+                    fake signature will be displayed in the bagde stream below with an <span class='label label-danger'>Invalid Signature</span> tag.
+                    They will not appear in <?php echo $userName ?>'s Badge Block. 
+                </p>
+                <p>
+                    All <strong>earned</strong> badges 
+                    displayed on this page are downloadable Open Badges, however badges attached to statements with invalid signatures will not
+                    verify when uploaded to an Open Badges Backpack. (Also note: the Backpack needs HTTP access the resources folder of this
+                    prototype in order to verify any badges).
+                </p>
             </div>
         </div>
     </div>

@@ -33,9 +33,15 @@ $statementResponse = $lrs->retrieveStatement($statementId);
 
 if ($statementResponse->success){
     $statement = $statementResponse->content;
-    $assertion = statementToAssertion($statement);
-    echo json_encode($assertion, JSON_UNESCAPED_SLASHES);
+    if (verifyBadgeStatement($queryStatement)["success"]){
+        $assertion = statementToAssertion($statement);
+        echo json_encode($assertion, JSON_UNESCAPED_SLASHES);
+    } else {
+        //Signature did not verify
+        //TODO: return whatever error code the OB spec demands?
+    }
 } else{
+    //Statement not found. 
     //TODO: return whatever error code the OB spec demands?
 }
 

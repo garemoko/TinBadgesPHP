@@ -15,7 +15,6 @@ $CFG->readonly_pass = "";
 
 //Statement Signing
 $CFG->privateKeyPassPhrase = "magic"; //Note: if you change this, you will also need to create a new private key (privkey.pem) in the "signing" folder. 
-$CFG->simulateFakedSignature = false; //If true, use hackerkey.pem to sign statements. These will NOT verify. 
 
 //Open Badges
 $CFG->badge_salt = "badge_salt";

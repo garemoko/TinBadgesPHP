@@ -41,3 +41,32 @@ function bakeBadge($imageURL, $assertion){
         //TODO: error - there's a problem with the input image. Is this already a baked Open Badge? It should be a normal png.
     }
 }
+
+function verifyBadgeStatement($statement){
+    try {
+        $certLocation = $statement->getContext()->getExtensions()->asVersion("1.0.0")["http://id.tincanapi.com/extension/jws-certificate-location"];
+    } catch (Exception $exception) {
+        return array(
+            "success" => false, 
+            "reason" => 'Certificate not found.'
+        );
+    }
+    try {
+        $certRaw = file_get_contents($certLocation);
+        $cert = openssl_pkey_get_public(openssl_x509_read($certRaw));
+
+        $verifyResponse = $statement->verify(
+            array(
+                "publicKey" => $cert
+            )
+        );
+        $verifyResponse["cert"] = $certRaw;
+        $verifyResponse["certLocation"] = $certLocation;
+        return $verifyResponse;
+    } catch (Exception $exception) {
+        return array(
+            "success" => false, 
+            "reason" => 'Unknown error verifying certificate: '. $exception->getMessage()
+        );
+    }
+}
