@@ -1,15 +1,15 @@
 <?php
 
-//TODO: consider allowing the prototype user to specify this data and even upload a badge image to the LRS. 
+//TODO: consider giving the prototype user and interface to specify this data and even upload a badge image to the LRS. 
 
 $badgeDefinitions = array(
-    "1" => array(
-        "name" => array("en"=>"Example Tin Badge number one", "fr"=>"Exemple Tin Badge numéro un"),
-        "description" => array("en"=>"The first example Tin Badge", "fr"=>"Le premier exemple Tin Badge"),
+    "3" => array(
+        "name" => array("en-US"=>"Example Tin Badge number one"),
+        "description" => array("en-US"=>"The first example Tin Badge"),
         "type" => "http://activitystrea.ms/schema/1.0/badge",
         "extensions" => array(
             "http://standard.openbadges.org/xapi/extensions/badgeclass.json" => array(
-                "@id" => $CFG->wwwroot . "/resources/badge-class.php?badge-id=1"
+                "@id" => $CFG->wwwroot . "/resources/badge-class.php?badge-id=" . urlencode($CFG->wwwroot . "/resources/badge-defintion.php?badge-id=3")
             )
         )
     ),
@@ -19,22 +19,27 @@ $badgeDefinitions = array(
         "type" => "http://activitystrea.ms/schema/1.0/badge",
         "extensions" => array(
             "http://standard.openbadges.org/xapi/extensions/badgeclass.json" => array(
-                "@id" => $CFG->wwwroot . "/resources/badge-class.php?badge-id=2"
+                "@id" => $CFG->wwwroot . "/resources/badge-class.php?badge-id=" . urlencode($CFG->wwwroot . "/resources/badge-defintion.php?badge-id=2")
             )
         )
     )
 );
 
-//TODO: store the badge class specifc data in the Activity Profile API
 $badgeClassData = array(
-    "1" => array(
-        "image" => $CFG->wwwroot ."/badges/badge-one.png",
-        "criteria" => $CFG->wwwroot ."/resources/criteria.php?badge-id=1",
+    "3" => array(
+        "image" => $CFG->wwwroot . "/resources/badge-image.php?badge-id=" . urlencode($CFG->wwwroot . "/resources/badge-defintion.php?badge-id=3"),
+        "criteria" => $CFG->wwwroot ."/resources/criteria.php?badge-id=3",
         "issuer" => $CFG->wwwroot ."/resources/issuer-organization.json"
     ),
     "2" => array(
-        "image" => $CFG->wwwroot ."/badges/badge-two.png",
+        "image" => $CFG->wwwroot . "/resources/badge-image.php?badge-id=" . urlencode($CFG->wwwroot . "/resources/badge-defintion.php?badge-id=2"),
         "criteria" => $CFG->wwwroot ."/resources/criteria.php?badge-id=2",
         "issuer" => $CFG->wwwroot ."/resources/issuer-organization.json"
     )
 );
+
+$badgeImages = array(
+    "3" => $CFG->wwwroot ."/badges/badge-one.png",
+    "2" => $CFG->wwwroot ."/badges/badge-two.png"
+);
+

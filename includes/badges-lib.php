@@ -116,6 +116,6 @@ function prefered_language ($available_languages,$http_accept_language="auto") {
     return $bestlang; 
 } 
 
-function getAppropriateLanguageMapValue ($map){
+function getAppropriateLanguageMapValue ($map){ //TODO: validate its not an empty map
     return $map[prefered_language(array_keys($map))];
 }
