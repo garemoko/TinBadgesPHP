@@ -14,7 +14,7 @@ if (!(isset($_POST["email"]) && isset($_POST["name"]))){
 include "includes/head.php";
 include "includes/badges-lib.php";
 include "includes/bakerlib.php"; //from Moodle
-include "includes/badge-definitions.php";
+//include "includes/badge-definitions.php"; //get data from the LRS instead
 require ("TinCanPHP/autoload.php");
 include "includes/tincan-lib.php";
 
@@ -32,24 +32,37 @@ require_once "TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/JWS.php";
 $userEmail = $_POST["email"];
 $userName = $_POST["name"];
 
-$lrs = new \TinCan\RemoteLRS();
+$lrs = new \TinCan\ExtendedRemoteLRS();
 $tinCanPHPUtil = new \TinCan\Util();
 $lrs
     ->setEndPoint($CFG->endpoint)
     ->setAuth($CFG->login,$CFG->pass)
     ->setversion($CFG->version);
 
-//TODO: Load badges (definition, class AND image) to the LRS on index.php. Get that stuff from the LRS here. 
+// Get a list of all badges loaded into the LRS and replicate the $badgeList object contained in includes/badge-definitions.php
+// This simulates the idea that administrators are creating badges and storing them in the LRS rather than using hard-coded badges
+// TODO: In fact, you can create additional badges in your LRS and they will appear on this page
 
-if (isset($_POST["badge"])){
+$badgeCreatedStatementList = $lrs->getBadgeClassesInLRS();
+$badgeList = array();
+
+foreach ($badgeCreatedStatementList as $badgeCreatedStatement) {
+    $badgeList[$badgeCreatedStatement->getObject()->getId()] = $badgeCreatedStatement->getObject()->getDefinition();
+}
+
+?>
+
+<?php
+//TODO: move this block of code to a separate badge earn PHP page either as an include, an ajax call or a redirects back here. 
+if (isset($_POST["activity-id"])){
 //In a production example, this page would include security checks. 
-    $badge = $_POST["badge"];
+    $badgeId = $_POST["activity-id"];
 
     $statementId = $tinCanPHPUtil->getUUID();
 
     $badgeActivity = array(
-        "id" =>  $CFG->wwwroot . "/resources/badge-defintion.php?badge-id=".$badge,
-        "definition" => $badgeDefinitions[$badge]
+        "id" =>  $badgeId,
+        "definition" => $badgeList[$badgeId]
     );
 
     $statement = new \TinCan\statement(
@@ -95,7 +108,8 @@ if (isset($_POST["badge"])){
     //Build the badge
     $assertion = statementToAssertion($statement);
 
-    $badgePNG = bakeBadge($badgeImages[$badge], $assertion);
+    $bagdeImageURL = $badgeList[$badgeId]->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["image"];
+    $badgePNG = bakeBadge($bagdeImageURL, $assertion);
 
     //echo ("<img src='data:image/png;base64,".base64_encode($badgePNG)."'>");
 
@@ -104,7 +118,7 @@ if (isset($_POST["badge"])){
             "content" => $badgePNG,
             "contentType" => "image/png",
             "usageType" => "http://standard.openbadges.org/xapi/attachment/badge.json",
-            "display" => $badgeDefinitions[$badge]["name"]
+            "display" => $badgeList[$badgeId]->getName()
             )
         )
     );
@@ -126,62 +140,6 @@ if (isset($_POST["badge"])){
         echo ("<b>Error content:</b> " . $response->content . "</p>");
     }
 
-    //Store badge metadata in Activity Profile API. This is retireved by resources/badge-class.php whenever a client looks up the badge class
-    $getActivityProfileResponse = $lrs->retrieveActivityProfile(
-        $badgeActivity, 
-        "http://standard.openbadges.org/xapi/activiy-profile/badgeclass.json"
-    );
-    if ($getActivityProfileResponse->success){
-        $activityProfileEtag = $getActivityProfileResponse->content->getEtag();
-
-        $setActivityProfileResponse = $lrs->saveActivityProfile(
-            $badgeActivity, 
-            "http://standard.openbadges.org/xapi/activiy-profile/badgeclass.json", 
-            json_encode($badgeClassData[$badge],JSON_UNESCAPED_SLASHES),
-            array(
-                "etag" => $activityProfileEtag,
-                "contentType" => "application/json"
-            )
-        );
-        if (!$setActivityProfileResponse->success){
-            echo ("<p class='alert alert-danger' role='alert'>Error storing badge metadata. </p>");
-            echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $setActivityProfileResponse->httpResponse["status"] . "<br/>");
-            echo ("<b>Error content:</b> " . $setActivityProfileResponse->content . "</p>");
-        }
-    } else {
-        echo ("<p class='alert alert-danger' role='alert'>Error retrieving activity profile eTag. </p>");
-        echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $getActivityProfileResponse->httpResponse["status"] . "<br/>");
-        echo ("<b>Error content:</b> " . $getActivityProfileResponse->content . "</p>");
-    }
-
-    //Store badge image in Activity Profile API. This is retireved by resources/badge-image.php whenever a client looks up the badge image
-    $getActivityProfileImageResponse = $lrs->retrieveActivityProfile(
-        $badgeActivity, 
-        "http://standard.openbadges.org/xapi/activiy-profile/badgeimage.json"
-    );
-    if ($getActivityProfileImageResponse->success){
-        $activityProfileImageEtag = $getActivityProfileImageResponse->content->getEtag();
-
-        $setActivityProfileImageResponse = $lrs->saveActivityProfile(
-            $badgeActivity, 
-            "http://standard.openbadges.org/xapi/activiy-profile/badgeimage.json", 
-            file_get_contents($badgeImages[$badge]),
-            array(
-                "etag" => $activityProfileImageEtag,
-                "contentType" => "application/json"
-            )
-        );
-        if (!$setActivityProfileImageResponse->success){
-            echo ("<p class='alert alert-danger' role='alert'>Error storing badge metadata. </p>");
-            echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $setActivityProfileImageResponse->httpResponse["status"] . "<br/>");
-            echo ("<b>Error content:</b> " . $setActivityProfileImageResponse->content . "</p>");
-        }
-    } else {
-        echo ("<p class='alert alert-danger' role='alert'>Error retrieving activity profile eTag. </p>");
-        echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $getActivityProfileImageResponse->httpResponse["status"] . "<br/>");
-        echo ("<b>Error content:</b> " . $getActivityProfileImageResponse->content . "</p>");
-    }
-
 }
 
 ?>
@@ -193,35 +151,24 @@ if (isset($_POST["badge"])){
             This page similuates a user (<?php echo $userEmail ?>) logged into an LMS earning a badge. Badges can be earned by completing 
             some kind of signnificant achievement, but today you"ll earn a badge by clicking a button! 
         </p>
+
         <div class="row">
-            <div class="col-md-3 text-center">
-                <img src="<?php echo $badgeImages["3"] ?>" class="open-badge-150 center-block">
-                <form action="earn.php" method="post">
-                    <input type="hidden" class="form-control" id="name" name="name" value="<?php echo $userName ?>">
-                    <input type="hidden" class="form-control" id="email" name="email" value="<?php echo $userEmail ?>">
-                    <input type="hidden" class="form-control" id="badge" name="badge" value="3">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" id="fakesig" name="fakesig"> Fake signature?
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-primary earn-btn">Earn!</button>
-                </form>
-            </div>
-           <div class="col-md-3 text-center">
-                <img src="<?php echo $badgeImages["2"] ?>" class="open-badge-150 center-block">
-                <form action="earn.php" method="post">
-                    <input type="hidden" class="form-control" id="name" name="name" value="<?php echo $userName ?>">
-                    <input type="hidden" class="form-control" id="email" name="email" value="<?php echo $userEmail ?>">
-                    <input type="hidden" class="form-control" id="badge" name="badge" value="2">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" id="fakesig" name="fakesig"> Fake signature?
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-primary earn-btn">Earn!</button>
-                </form>
-            </div>
+            <?php foreach ($badgeList as $badgeId => $badgeDefinition): ?>
+                <div class="col-md-3 text-center">
+                    <img src="<?php echo $badgeDefinition->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["image"]; ?>" class="open-badge-150 center-block">
+                    <form action="earn.php" method="post">
+                        <input type="hidden" class="form-control" id="name" name="name" value="<?php echo $userName; ?>">
+                        <input type="hidden" class="form-control" id="email" name="email" value="<?php echo $userEmail; ?>">
+                        <input type="hidden" class="form-control" id="activity-id" name="activity-id" value="<?php echo $badgeId; ?>">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="fakesig" name="fakesig"> Fake signature?
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary earn-btn">Earn!</button>
+                    </form>
+                </div>
+            <?php endforeach; ?>
             <div class="col-md-6">
                 <p>
                     Use the fake signature button to simulate a hacker attempting to issue a badge to <?php echo $userEmail ?>. Badges issued with a 

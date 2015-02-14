@@ -71,7 +71,6 @@ function verifyBadgeStatement($statement){
     }
 }
 
-
 /* 
 
   determine which language out of an available set the user prefers most 

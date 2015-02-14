@@ -11,8 +11,8 @@ include "../includes/tincan-lib.php";
 
 header('Content-Type: application/json');
 
-if (isset($_GET["badge-id"])){
-    $badgeId = urldecode($_GET["badge-id"]);
+if (isset($_GET["activity-id"])){
+    $badgeId = urldecode($_GET["activity-id"]);
 } else {
     header("HTTP/1.1 400 Bad Request");
     http_response_code(400);
@@ -28,32 +28,22 @@ $activityDefResponse = $lrs->retrieveFullActivityObject($badgeId);
 
 if ($activityDefResponse->success){
     $badgeDefinition = $activityDefResponse->content->getDefinition();
+    $badgeClassData = $badgeDefinition->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"];
 } else {
     header("HTTP/1.1 404 Not Found");
     http_response_code(404);
     die();
 }
 
-$getActivityProfileResponse = $lrs->retrieveActivityProfile(
-    array("id" => $badgeId), 
-    "http://standard.openbadges.org/xapi/activiy-profile/badgeclass.json"
+echo json_encode(
+    array(
+        "name" => getAppropriateLanguageMapValue($badgeDefinition->getName()->asVersion("1.0.0")),
+        "description" => getAppropriateLanguageMapValue($badgeDefinition->getDescription()->asVersion("1.0.0")),
+        "image" => $badgeClassData["image"],
+        "criteria" => $badgeClassData["criteria"],
+        "issuer" => $badgeClassData["issuer"]
+    ), 
+    JSON_UNESCAPED_SLASHES
 );
 
-if ($getActivityProfileResponse->success){
-    $badgeClassData = json_decode($getActivityProfileResponse->content->getContent(),true);
-    echo json_encode(
-        array(
-            "name" => getAppropriateLanguageMapValue($badgeDefinition->getName()->asVersion("1.0.0")),
-            "description" => getAppropriateLanguageMapValue($badgeDefinition->getDescription()->asVersion("1.0.0")),
-            "image" => $badgeClassData["image"],
-            "criteria" => $badgeClassData["criteria"],
-            "issuer" => $badgeClassData["issuer"]
-        ), 
-        JSON_UNESCAPED_SLASHES
-    );
-} else {
-    header("HTTP/1.1 404 Not Found");
-    http_response_code(404);
-    die();
-}
 

@@ -18,7 +18,7 @@ if (isset($_GET["badge-id"])){
 
 
 if (isset($badges[$badgeId])){
-    echo json_encode($badgeDefinitions[$badgeId], JSON_UNESCAPED_SLASHES);
+    echo json_encode($badgeList[$badgeId]["tinCanDefinition"], JSON_UNESCAPED_SLASHES);
 } else {
     header("HTTP/1.1 404 Not Found");
     http_response_code(404);

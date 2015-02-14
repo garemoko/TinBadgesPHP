@@ -11,8 +11,8 @@ include "../includes/tincan-lib.php";
 
 header('Content-Type: image/png');
 
-if (isset($_GET["badge-id"])){
-    $badgeId = urldecode($_GET["badge-id"]);
+if (isset($_GET["activity-id"])){
+    $badgeId = urldecode($_GET["activity-id"]);
 } else {
     header("HTTP/1.1 400 Bad Request");
     http_response_code(400);

@@ -40,7 +40,7 @@ TODO: display an icon indicating whether or not the statement has been signed an
     <input id="agentValue" type="hidden" value="">
     <input id="verb1" type="hidden" value="">
     <input id="activityId1" type="hidden" value="http://standard.openbadges.org/xapi/recipe/base/0">
-    <input id="format" type="hidden" value="exact">
+    <input id="format" type="hidden" value="canonical">
     <input id="since1" type="hidden" value="">
     <input id="until1" type="hidden" value="">
     <input id="registration1" type="hidden" value="">

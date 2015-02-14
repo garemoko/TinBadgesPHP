@@ -12,7 +12,7 @@ $queryCFG = array(
     "activity" => new \TinCan\Activity(array("id"=> "http://standard.openbadges.org/xapi/recipe/base/0")),
     "related_activities" => "true",
     //"limit" => 1, //Use this to test the "more" statements feature
-    "format"=>"exact" //we don't need activity defitinions
+    "format"=>"canonical" 
 );
 
 if ($CFG->rebakeBadgeToDisplay) {
@@ -21,35 +21,14 @@ if ($CFG->rebakeBadgeToDisplay) {
     $queryCFG["attachments"] = "true";
 }
 
-$queryStatementsResponse = $lrs->queryStatements($queryCFG);
-
-$queryStatements = $queryStatementsResponse->content->getStatements();
-$moreStatementsURL = $queryStatementsResponse->content->getMore(); 
-
-
-while (!is_null($moreStatementsURL)){
-    $moreStatementsResponse = $lrs->moreStatements($moreStatementsURL);
-    $moreStatements = $moreStatementsResponse->content->getStatements();
-    $moreStatementsURL = $moreStatementsResponse->content->getMore(); 
-
-    //Note: due to the structure of the arrays, array_merge does not work as expected. 
-    foreach ($moreStatements as $moreStatement){ 
-        array_push($queryStatements, $moreStatement);
-    }
-}
-
-
+$options = array(
+    'headers' => array(
+        'Accept-language: ' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] . ', *'
+    )
+);
 
 //get the most recent earn of each badge
-$unqiueEarnStatements = array();
-foreach ($queryStatements as $queryStatement){
-    if (verifyBadgeStatement($queryStatement)["success"]) {
-        $thisBadgeId = $queryStatement->getObject()->getId();
-        if (!isset($unqiueEarnStatements[$thisBadgeId])){
-            $unqiueEarnStatements[$thisBadgeId] = $queryStatement;
-        }
-    }
-}
+$unqiueEarnStatements = $lrs->getStatementsWithUniqueActivitiesFromStatementQuery($queryCFG, $options);
 
 ?>
 
