@@ -15,7 +15,7 @@ $badgeList = array(
                     "@id" => $CFG->wwwroot . "/resources/badge-class.php?activity-id=" . urlencode($CFG->wwwroot . "/resources/badge-defintion.php?badge-id=1"),
                     "image" => $CFG->wwwroot . "/resources/badge-image.php?activity-id=" . urlencode($CFG->wwwroot . "/resources/badge-defintion.php?badge-id=1"),
                     "criteria" => $CFG->wwwroot ."/resources/criteria.php?badge-id=1",
-                    "issuer" => $CFG->wwwroot ."/resources/issuer-organization.json"
+                    "issuer" => $CFG->wwwroot ."/resources/issuer.php?activity-id=" . urlencode("http://tincanapi.com")
                 )
             )
         ),
@@ -31,7 +31,7 @@ $badgeList = array(
                     "@id" => $CFG->wwwroot . "/resources/badge-class.php?activity-id=" . urlencode($CFG->wwwroot . "/resources/badge-defintion.php?badge-id=2"),
                     "image" => $CFG->wwwroot . "/resources/badge-image.php?activity-id=" . urlencode($CFG->wwwroot . "/resources/badge-defintion.php?badge-id=2"),
                     "criteria" => $CFG->wwwroot ."/resources/criteria.php?badge-id=2",
-                    "issuer" => $CFG->wwwroot ."/resources/issuer-organization.json"
+                    "issuer" => $CFG->wwwroot ."/resources/issuer.php?activity-id=" . urlencode("http://tincanapi.com")
                 )
             )
         ),

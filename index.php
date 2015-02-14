@@ -29,9 +29,68 @@ $lrs
     ->setAuth($CFG->login,$CFG->pass)
     ->setversion($CFG->version);
 
-//Store the badges to be used in this prototype in the LRS. 
-//TODO: store issuer details in the LRS
+//Store issuers to be used in this prototype in the LRS.
+$statementId = $tinCanPHPUtil->getUUID();
 
+$issuerActivity = array(
+    "id" =>  "http://tincanapi.com",
+    "definition" => array(
+        "name" => array("en-US"=>"Example Tin Organization"),
+        "description" => array("en-US"=>"An example organization who issued this example Open Badge with Tin Can!")
+    )
+);
+
+$statement = new \TinCan\statement(
+    array(
+        "id"=> $statementId,
+        "timestamp" => (new \DateTime())->format('c'), 
+        "actor" => array(
+            "name" => "Tin Badges Prototype Admin",
+            "account" => array(
+                "name" => "admin",
+                "homePage" => $CFG->wwwroot,
+            )
+        ), 
+        "verb" => array(
+            "id" => "http://standard.openbadges.org/xapi/verbs/defined-issuer.json",
+            "display" => array(
+                "en" => "defined Open Badge issuer",
+            ),
+        ),
+        "object" => $issuerActivity,
+        "context" => array(
+            "contextActivities" => array(
+                "category" => array(
+                    array( //TODO: Host metadata at standard.openbadges.org and update this to version 1 for release version of recipe
+                        "id" => "http://standard.openbadges.org/xapi/recipe/base/0",
+                        "definition" => array(
+                            "type" => "http://id.tincanapi.com/activitytype/recipe"
+                        )
+                    )
+                )
+            ),
+            "extensions" => array(
+                "http://id.tincanapi.com/extension/jws-certificate-location" => $CFG->wwwroot ."/signing/cacert.pem"
+            )
+        )
+    )
+);
+
+//Note: in a real system, the private key should NOT be available via the web.
+$privKey = "file://signing/privkey.pem";
+
+
+$statement->sign($privKey, $CFG->privateKeyPassPhrase);
+
+
+$response = $lrs->saveStatement($statement);
+if (!$response->success){
+    echo ("<p class='alert alert-danger' role='alert'>Error communicating with the LRS Statement API. Please check your configuration settings.</p>");
+    echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $response->httpResponse["status"] . "<br/>");
+    echo ("<b>Error content:</b> " . $response->content . "</p>");
+}
+
+//Store the badges to be used in this prototype in the LRS. 
 foreach ($badgeList as $badge => $badgeData) {
 
     $statementId = $tinCanPHPUtil->getUUID();
@@ -78,11 +137,7 @@ foreach ($badgeList as $badge => $badgeData) {
     );
 
     //Note: in a real system, the private key should NOT be available via the web.
-    if (isset($_POST["fakesig"])){
-        $privKey = "file://signing/hackerkey.pem";
-    } else {
-        $privKey = "file://signing/privkey.pem";
-    }
+    $privKey = "file://signing/privkey.pem";
 
     $statement->sign($privKey, $CFG->privateKeyPassPhrase);
 

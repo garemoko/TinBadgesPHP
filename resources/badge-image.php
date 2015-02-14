@@ -5,7 +5,6 @@
 Recieves badge activity id, returns badge source image. 
 */
 include "../config.php";
-include "../includes/badges-lib.php";
 require ("../TinCanPHP/autoload.php");
 include "../includes/tincan-lib.php";
 
