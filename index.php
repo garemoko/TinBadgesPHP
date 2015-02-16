@@ -163,18 +163,46 @@ foreach ($badgeList as $badge => $badgeData) {
             file_get_contents($badgeData["sourceImage"]),
             array(
                 "etag" => $activityProfileImageEtag,
-                "contentType" => "application/json"
+                "contentType" => "image/png"
             )
         );
         if (!$setActivityProfileImageResponse->success){
-            echo ("<p class='alert alert-danger' role='alert'>Error storing badge metadata. </p>");
+            echo ("<p class='alert alert-danger' role='alert'>Error storing badge image. </p>");
             echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $setActivityProfileImageResponse->httpResponse["status"] . "<br/>");
             echo ("<b>Error content:</b> " . $setActivityProfileImageResponse->content . "</p>");
         }
     } else {
-        echo ("<p class='alert alert-danger' role='alert'>Error retrieving activity profile eTag. </p>");
+        echo ("<p class='alert alert-danger' role='alert'>Error retrieving badge image eTag. </p>");
         echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $getActivityProfileImageResponse->httpResponse["status"] . "<br/>");
         echo ("<b>Error content:</b> " . $getActivityProfileImageResponse->content . "</p>");
+    }
+
+    //Store badge criteria in Activity Profile API. This is retireved by resources/criteria.php and can be used to transmit bagde criteria with badges between systems
+    $getActivityProfileCriteriaResponse = $lrs->retrieveActivityProfile(
+        $badgeActivity, 
+        "http://standard.openbadges.org/xapi/activiy-profile/badgecriteria.json"
+    );
+    if ($getActivityProfileCriteriaResponse ->success){
+        $activityProfileCriteriaEtag = $getActivityProfileCriteriaResponse->content->getEtag();
+
+        $setActivityProfileCriteriaResponse = $lrs->saveActivityProfile(
+            $badgeActivity, 
+            "http://standard.openbadges.org/xapi/activiy-profile/badgecriteria.json", 
+            json_encode($badgeData["badgeCriteria"]),
+            array(
+                "etag" => $activityProfileCriteriaEtag,
+                "contentType" => "application/json"
+            )
+        );
+        if (!$setActivityProfileCriteriaResponse->success){
+            echo ("<p class='alert alert-danger' role='alert'>Error storing badge criteria. </p>");
+            echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $setActivityProfileCriteriaResponse->httpResponse["status"] . "<br/>");
+            echo ("<b>Error content:</b> " . $setActivityProfileCriteriaResponse->content . "</p>");
+        }
+    } else {
+        echo ("<p class='alert alert-danger' role='alert'>Error retrieving badge criteria eTag. </p>");
+        echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $getActivityProfileCriteriaResponse->httpResponse["status"] . "<br/>");
+        echo ("<b>Error content:</b> " . $getActivityProfileCriteriaResponse->content . "</p>");
     }
 }
 

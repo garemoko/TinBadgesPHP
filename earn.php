@@ -50,12 +50,120 @@ foreach ($badgeCreatedStatementList as $badgeCreatedStatement) {
     $badgeList[$badgeCreatedStatement->getObject()->getId()] = $badgeCreatedStatement->getObject()->getDefinition();
 }
 
+//Track that the learner experienced this page. 
+$statement = new \TinCan\statement(
+    array(
+        "id"=> $statementId,
+        "timestamp" => (new \DateTime())->format('c'), 
+        "actor" => array(
+            "mbox"=> "mailto:".$userEmail,
+            "name"=> $userName
+        ), 
+        "verb" => array(
+            "id" => "http://adlnet.gov/expapi/verbs/experienced",
+            "display" => array(
+                "en" => "experienced",
+            ),
+        ),
+        "object" => array(
+            "id" => $CFG->wwwroot,
+            "definition" => array(
+                "type" => "http://activitystrea.ms/schema/1.0/application"
+            )
+        ),
+        "context" => array(
+            "contextActivities" => array(
+                "grouping" => array(
+                    array(
+                        "id" => $CFG->wwwroot,
+                        "definition" => array(
+                            "type" => "http://activitystrea.ms/schema/1.0/application"
+                        )
+                    )
+                )
+            ),
+            "extensions" => array(
+                "http://id.tincanapi.com/extension/jws-certificate-location" => $CFG->wwwroot ."/signing/cacert.pem"
+            )
+        )
+    )
+);
+
+//Note: in a real system, the private key should NOT be available via the web.
+$statement->sign("file://signing/privkey.pem", $CFG->privateKeyPassPhrase);
+
+$response = $lrs->saveStatement($statement);
+if (!$response->success){
+    echo ("<p class='alert alert-danger' role='alert'>Error communicating with the LRS Statement API. Please check your configuration settings.</p>");
+    echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $response->httpResponse["status"] . "<br/>");
+    echo ("<b>Error content:</b> " . $response->content . "</p>");
+}
+
 ?>
 
 <?php
 //TODO: move this block of code to a separate badge earn PHP page either as an include, an ajax call or a redirects back here. 
 if (isset($_POST["activity-id"])){
 //In a production example, this page would include security checks. 
+
+    //issue a statement that the button was clicked
+
+    $statement = new \TinCan\statement(
+        array(
+            "id"=> $statementId,
+            "timestamp" => (new \DateTime())->format('c'), 
+            "actor" => array(
+                "mbox"=> "mailto:".$userEmail,
+                "name"=> $userName
+            ), 
+            "verb" => array(
+                "id" => "http://adlnet.gov/expapi/verbs/interacted",
+                "display" => array(
+                    "en" => "interacted with",
+                ),
+            ),
+            "object" => array(
+                "id" => $_POST["button-activity-id"],
+                "definition" => array(
+                    "type" => "http://activitystrea.ms/schema/1.0/application"
+                )
+            )
+            "context" => array(
+                "contextActivities" => array(
+                    "grouping" => array(
+                        array(
+                            "id" => $CFG->wwwroot,
+                            "definition" => array(
+                                "type" => "http://activitystrea.ms/schema/1.0/application"
+                            )
+                        )
+                    )
+                ),
+                "extensions" => array(
+                    "http://id.tincanapi.com/extension/jws-certificate-location" => $CFG->wwwroot ."/signing/cacert.pem"
+                )
+            )
+        )
+    );
+
+    //Note: in a real system, the private key should NOT be available via the web.
+    if (isset($_POST["fakesig"])){
+        $privKey = "file://signing/hackerkey.pem";
+    } else {
+        $privKey = "file://signing/privkey.pem";
+    }
+
+    $statement->sign($privKey, $CFG->privateKeyPassPhrase);
+
+    $response = $lrs->saveStatement($statement);
+    if (!$response->success){
+        echo ("<p class='alert alert-danger' role='alert'>Error communicating with the LRS Statement API. Please check your configuration settings.</p>");
+        echo ("<p class='alert alert-info' role='alert'><b>Error code:</b> " . $response->httpResponse["status"] . "<br/>");
+        echo ("<b>Error content:</b> " . $response->content . "</p>");
+    }
+
+    //issue statement that the badge was earned
+    //TODO: put this in a runable task that checks badge criteria and then awards the badge when a match is found. 
     $badgeId = $_POST["activity-id"];
 
     $statementId = $tinCanPHPUtil->getUUID();
@@ -160,6 +268,7 @@ if (isset($_POST["activity-id"])){
                         <input type="hidden" class="form-control" id="name" name="name" value="<?php echo $userName; ?>">
                         <input type="hidden" class="form-control" id="email" name="email" value="<?php echo $userEmail; ?>">
                         <input type="hidden" class="form-control" id="activity-id" name="activity-id" value="<?php echo $badgeId; ?>">
+                        <input type="hidden" class="form-control" id="button-activity-id" name="button-activity-id" value="<?php echo $CFG->wwwroot . "/buttons?" . urlencode($badgeId); ?>">
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" id="fakesig" name="fakesig"> Fake signature?

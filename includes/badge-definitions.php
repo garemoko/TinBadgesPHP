@@ -19,7 +19,17 @@ $badgeList = array(
                 )
             )
         ),
-        "sourceImage" => $CFG->wwwroot ."/badges/badge-one.png"
+        "sourceImage" => $CFG->wwwroot ."/badges/badge-one.png",
+        "badgeCriteria" => array(
+            array(
+                "verb" => new \TinCan\Verb(array("id"=> "http://adlnet.gov/expapi/verbs/experienced")),
+                "activity" => new \TinCan\Activity(array("id"=> $CFG->wwwroot)),
+            ),
+            array(
+                "verb" => new \TinCan\Verb(array("id"=> "http://adlnet.gov/expapi/verbs/interacted")),
+                "activity" => new \TinCan\Activity(array("id"=> $CFG->wwwroot . "/buttons?" . urlencode($CFG->wwwroot . "/resources/badge-defintion.php?badge-id=2"))),
+            )
+        );
     ),
     "2" => array(
         "tinCanDefinition" => array(
@@ -35,7 +45,17 @@ $badgeList = array(
                 )
             )
         ),
-        "sourceImage" => $CFG->wwwroot ."/badges/badge-two.png"
+        "sourceImage" => $CFG->wwwroot ."/badges/badge-two.png",
+        "badgeCriteria" => array(
+            array(
+                "verb" => new \TinCan\Verb(array("id"=> "http://adlnet.gov/expapi/verbs/experienced")),
+                "activity" => new \TinCan\Activity(array("id"=> $CFG->wwwroot)),
+            ),
+            array(
+                "verb" => new \TinCan\Verb(array("id"=> "http://adlnet.gov/expapi/verbs/interacted")),
+                "activity" => new \TinCan\Activity(array("id"=> $CFG->wwwroot . "/buttons?" . urlencode($CFG->wwwroot . "/resources/badge-defintion.php?badge-id=2"))),
+            )
+        );
     )
 );
 
