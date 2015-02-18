@@ -55,7 +55,7 @@ $badgeList = array(
                 "verb" => new \TinCan\Verb(array("id"=> "http://adlnet.gov/expapi/verbs/interacted")),
                 "activity" => new \TinCan\Activity(array("id"=> $CFG->wwwroot . "/buttons?" . urlencode($CFG->wwwroot . "/resources/badge-defintion.php?badge-id=2"))),
             )
-        );
+        )
     )
 );
 

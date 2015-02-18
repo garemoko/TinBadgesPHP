@@ -8,9 +8,9 @@ An introduction to the prototype. Collects user information, links to earn.php
 include "config.php";
 include 'includes/head.php';
 
-include "includes/badge-definitions.php";
 require ("TinCanPHP/autoload.php");
 include "includes/tincan-lib.php";
+include "includes/badge-definitions.php";
 
 //The below requires can be removed once the statement signing features have been merged into TinCanPHP
 require_once "TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Signer/SignerInterface.php";

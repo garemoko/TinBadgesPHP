@@ -49,7 +49,7 @@ $badgeList = array();
 foreach ($badgeCreatedStatementList as $badgeCreatedStatement) {
     $badgeList[$badgeCreatedStatement->getObject()->getId()] = $badgeCreatedStatement->getObject()->getDefinition();
 }
-
+$statementId = $tinCanPHPUtil->getUUID();
 //Track that the learner experienced this page. 
 $statement = new \TinCan\statement(
     array(
@@ -107,7 +107,7 @@ if (isset($_POST["activity-id"])){
 //In a production example, this page would include security checks. 
 
     //issue a statement that the button was clicked
-
+    $statementId = $tinCanPHPUtil->getUUID();
     $statement = new \TinCan\statement(
         array(
             "id"=> $statementId,
@@ -127,7 +127,7 @@ if (isset($_POST["activity-id"])){
                 "definition" => array(
                     "type" => "http://activitystrea.ms/schema/1.0/application"
                 )
-            )
+            ),
             "context" => array(
                 "contextActivities" => array(
                     "grouping" => array(
