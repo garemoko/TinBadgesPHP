@@ -1,19 +1,23 @@
 <?php
-
 /*
+Copyright 2015 Rustici Software
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
 ### stream.php
 Displays a stream of badge statements including the badge image and signed statement verification. 
 */
 
-/*
-TODO: I had to remove JQuery UI from the viewer as it didn't work with bootstrap; I now need to make the statement 
-collpase work again and generally make the page look nicer.
-
-TODO: display images attached to statements
-
-TODO: display an icon indicating whether or not the statement has been signed and if the signature has been verified. 
-
-*/
 ?>
 
 <h3>Badge Stream</h3>
@@ -59,7 +63,7 @@ TODO: display an icon indicating whether or not the statement has been signed an
 
 
 <script>
-//TODO: but this in a separate js file
+//TODO: put this in a separate js file
     function Config() {
         "use strict";
     }

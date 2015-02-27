@@ -1,3 +1,31 @@
+/*
+Copyright 2015 Rustici Software
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+### TinCanViewerOverrides.js
+Overrides to functions within the TinCanStatementViewer submodules to:
+
+1. Allow the statement viewer to display correctly within the frame of this prototype.
+2. Remove the configuration settings and replace with fixed configuration settings
+suitable for this prototype.
+3. Add additional functionality such as the display of Badge images and Statement signature
+verification results. 
+*/
+
+//TODO: Not all the functions within the renderStatments class have been modified. 
+//  Check which have been modified and only override these. 
 TINCAN.Viewer.prototype.renderStatements = function (statements) {
     var allStmtStr,
         i,
