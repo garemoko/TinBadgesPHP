@@ -29,7 +29,7 @@ include "includes/badges-lib.php";
 include "includes/bakerlib.php"; //from Moodle
 //include "includes/badge-definitions.php"; //get data from the LRS instead
 require ("TinCanPHP/autoload.php");
-include "includes/tincan-lib.php";
+include "includes/TinBadges.php";
 
 //The below requires can be removed once the statement signing features have been merged into TinCanPHP
 require_once "TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Signer/SignerInterface.php";
@@ -45,7 +45,7 @@ require_once "TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/JWS.php";
 $userEmail = $_POST["email"];
 $userName = $_POST["name"];
 
-$lrs = new \TinCan\ExtendedRemoteLRS();
+$lrs = new \TinBadges\RemoteLRS();
 $tinCanPHPUtil = new \TinCan\Util();
 $lrs
     ->setEndPoint($CFG->endpoint)

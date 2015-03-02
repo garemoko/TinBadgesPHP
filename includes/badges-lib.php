@@ -1,9 +1,32 @@
 <?php
-
 /*
+Copyright 2015 Rustici Software
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+### badges-lib.php
 Functions relating to baking and signing of badges. 
 */
 
+
+/*
+Function used to translate a Tin Can Statement into an Open Badges Assertion. 
+
+@function statementToAssertion 
+@param {Object} $statement Statement object to be translated.
+    See https://github.com/RusticiSoftware/TinCanPHP/blob/master/src/Statement.php
+@return {Object} $assertion The LRSResponse object returned. 
+*/
 function statementToAssertion($statement){
     global $CFG;
 
@@ -71,10 +94,9 @@ function verifyBadgeStatement($statement){
 }
 
 /* 
-
   determine which language out of an available set the user prefers most 
 
-  $available_languages        array with language-tag-strings (must be lowercase) that are available 
+  $available_languages     array with language-tag-strings (must be lowercase) that are available 
   $http_accept_language    a HTTP_ACCEPT_LANGUAGE string (read from $_SERVER['HTTP_ACCEPT_LANGUAGE'] if left out) 
 */ 
 function prefered_language ($available_languages,$http_accept_language="auto") { 

@@ -19,7 +19,7 @@ Recieves badge activity id, returns badge source image.
 */
 include "../config.php";
 require ("../TinCanPHP/autoload.php");
-include "../includes/tincan-lib.php";
+include "../includes/TinBadges.php";
 
 header('Content-Type: image/png');
 
@@ -31,7 +31,7 @@ if (isset($_GET["activity-id"])){
     die();
 }
 
-$lrs = new \TinCan\ExtendedRemoteLRS();
+$lrs = new \TinBadges\RemoteLRS();
 $lrs
     ->setEndPoint($CFG->endpoint)
     ->setAuth($CFG->login,$CFG->pass);

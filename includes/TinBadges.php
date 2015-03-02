@@ -14,15 +14,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-### tincan-lib.php
-Extends TinCanPHP's RemoteLRS class to provide additional functions relating to Tin Can. 
-Some of these functions are specific to the Tin Can Open Badges crossover. 
+### TinBadges.php
+Extends TinCanPHP to provide additional functions. 
+Some of these functions are specific to the Tin Can Open Badges crossover, others are more generic. 
 
 */
 
-namespace TinCan;
+namespace TinBadges; //TODO: remove tincan-lib.php, then move the functions from badge-lip.php in here and remove that too.
 
-class ExtendedRemoteLRS extends RemoteLRS {
+class RemoteLRS extends \TinCan\RemoteLRS {
     /*
     Method used to retrieve a full Activity Object from the Activity Profile API. 
     This generic function should be added to TinCanPHP.
@@ -60,28 +60,6 @@ class ExtendedRemoteLRS extends RemoteLRS {
     See https://github.com/RusticiSoftware/TinCanPHP/blob/master/src/RemoteLRS.php#L345
     This version allows options to be passed through to the sendRequest method. 
 
-    @method queryStatementsWithOptions 
-    @param {Object} $query A query object as expected by the queryStatementsRequestParams function
-        See https://github.com/RusticiSoftware/TinCanPHP/blob/master/src/RemoteLRS.php#L306
-    @param {Object} $options An Options object as expected by the sendRequest function
-        See https://github.com/RusticiSoftware/TinCanPHP/blob/master/src/RemoteLRS.php#L66
-    @return {Object} $reponse The LRSResponse object returned. 
-        See https://github.com/RusticiSoftware/TinCanPHP/blob/master/src/LRSResponse.php
-    */
-    public function queryStatementsWithOptions($query, $options) {
-        $requestCfg = array(
-            'params' => $this->_queryStatementsRequestParams($query),
-        );
-
-        $response = $this->sendRequest('GET', 'statements', $requestCfg, $options);
-
-        if ($response->success) {
-            $this->_queryStatementsResult($response);
-        }
-
-        return $response;
-    }
-
     /*
     Method used to query Statements, but only returns the most recent statement about each activity returned
     by the LRS; older statements abotu each activity are removed. 
@@ -95,8 +73,8 @@ class ExtendedRemoteLRS extends RemoteLRS {
     @return {Array} $unqiueStatements An array of Statement objects.
         See https://github.com/RusticiSoftware/TinCanPHP/blob/master/src/Statement.php
     */
-    public function getStatementsWithUniqueActivitiesFromStatementQuery ($query, $options) {
-        $queryStatementsResponse = $this->queryStatementsWithOptions($query, $options);
+    public function getStatementsWithUniqueActivitiesFromStatementQuery ($query) {
+        $queryStatementsResponse = $this->queryStatements($query);
 
         $queryStatements = $queryStatementsResponse->content->getStatements();
         $moreStatementsURL = $queryStatementsResponse->content->getMore(); 
@@ -142,17 +120,65 @@ class ExtendedRemoteLRS extends RemoteLRS {
             "related_activities" => "true",
             //"limit" => 1, //Use this to test the "more" statements feature
             "format"=>"canonical",
-            "attachments"=>"false"
-        );
-
-        $options = array(
+            "attachments"=>"false",
             'headers' => array(
                 'Accept-language: ' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] . ', *'
             )
         );
 
-        return $this->getStatementsWithUniqueActivitiesFromStatementQuery($queryCFG, $options);
+        return $this->getStatementsWithUniqueActivitiesFromStatementQuery($queryCFG);
     }
+
+    //Private function from TinCanPHP - modified
+    private function _queryStatementsRequestParams($query) {
+        $result = array();
+
+        foreach (array('agent') as $k) {
+            if (isset($query[$k])) {
+                $result[$k] = json_encode($query[$k]->asVersion($this->version));
+            }
+        }
+        foreach (
+            array(
+                'verb',
+                'activity',
+            ) as $k
+        ) {
+            if (isset($query[$k])) {
+                $result[$k] = $query[$k]->getId();
+            }
+        }
+        foreach (
+            array(
+                'ascending',
+                'related_activities',
+                'related_agents',
+                'attachments',
+            ) as $k
+        ) {
+            if (isset($query[$k])) {
+                $result[$k] = $query[$k] ? 'true' : 'false';
+            }
+        }
+        foreach (
+            array(
+                'registration',
+                'since',
+                'until',
+                'limit',
+                'format',
+                'headers', //+
+                'params', //+
+            ) as $k
+        ) {
+            if (isset($query[$k])) {
+                $result[$k] = $query[$k];
+            }
+        }
+
+        return $result;
+    }
+
 }
 
 
