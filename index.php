@@ -22,7 +22,7 @@ include "config.php";
 include 'includes/head.php';
 
 require ("TinCanPHP/autoload.php");
-include "includes/tincan-lib.php";
+include "includes/TinBadges.php";
 include "includes/badge-definitions.php";
 
 //The below requires can be removed once the statement signing features have been merged into TinCanPHP

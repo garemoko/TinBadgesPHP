@@ -25,7 +25,6 @@ if (!(isset($_POST["email"]) && isset($_POST["name"]))){
 }
 
 include "includes/head.php";
-include "includes/badges-lib.php";
 include "includes/bakerlib.php"; //from Moodle
 //include "includes/badge-definitions.php"; //get data from the LRS instead
 require ("TinCanPHP/autoload.php");
@@ -45,6 +44,7 @@ require_once "TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/JWS.php";
 $userEmail = $_POST["email"];
 $userName = $_POST["name"];
 
+$baker = new \TinBadges\Baker();
 $lrs = new \TinBadges\RemoteLRS();
 $tinCanPHPUtil = new \TinCan\Util();
 $lrs
@@ -227,10 +227,10 @@ if (isset($_POST["activity-id"])){
     );
 
     //Build the badge
-    $assertion = statementToAssertion($statement);
+    $assertion = $baker->statementToAssertion($statement);
 
     $bagdeImageURL = $badgeList[$badgeId]->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["image"];
-    $badgePNG = bakeBadge($bagdeImageURL, $assertion);
+    $badgePNG = $baker->bake($bagdeImageURL, $assertion);
 
     //echo ("<img src='data:image/png;base64,".base64_encode($badgePNG)."'>");
 

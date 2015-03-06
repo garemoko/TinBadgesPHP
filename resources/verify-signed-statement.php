@@ -20,7 +20,7 @@ verifies that statement and returns a success status.
 */
 include "../config.php";
 require ("../TinCanPHP/autoload.php");
-include "../includes/badges-lib.php";
+include "../includes/TinBadges.php";
 
 //The below requires can be removed once the statement signing features have been merged into TinCanPHP
 require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Signer/SignerInterface.php";
@@ -41,17 +41,20 @@ if (isset($_GET["statement"])){
 }
 
 header("Content-Type: application/json");
-
-$lrs = new \TinCan\RemoteLRS();
+$baker = new \TinBadges\Baker();
+$lrs = new \TinBadges\RemoteLRS();
 $lrs
     ->setEndPoint($CFG->endpoint)
     ->setAuth($CFG->readonly_login,$CFG->readonly_pass);
 
 $statementResponse = $lrs->retrieveStatement($statementId, array('attachments' => true));
 
+//var_dump($statementResponse->content);
+//var_dump(new \TinBadges\Statement($statementResponse->content->asVersion("1.0.0")));
+
 if ($statementResponse->success){
     $statement = $statementResponse->content;
-    echo json_encode(verifyBadgeStatement($statement), JSON_UNESCAPED_SLASHES);
+    echo json_encode($baker->verifyBadgeStatement($statement), JSON_UNESCAPED_SLASHES);
 } else{
     echo json_encode(
         array(

@@ -32,6 +32,7 @@ if (isset($_GET["activity-id"])){
     die();
 }
 
+$util = new \TinBadges\Util();
 $lrs = new \TinBadges\RemoteLRS();
 $lrs
     ->setEndPoint($CFG->endpoint)
@@ -50,8 +51,8 @@ if ($activityDefResponse->success){
 
 echo json_encode(
     array(
-        "name" => getAppropriateLanguageMapValue($badgeDefinition->getName()->asVersion("1.0.0")),
-        "description" => getAppropriateLanguageMapValue($badgeDefinition->getDescription()->asVersion("1.0.0")),
+        "name" => $util->getAppropriateLanguageMapValue($badgeDefinition->getName()->asVersion("1.0.0")),
+        "description" => $util->getAppropriateLanguageMapValue($badgeDefinition->getDescription()->asVersion("1.0.0")),
         "url" => $issuerId
     ), 
     JSON_UNESCAPED_SLASHES

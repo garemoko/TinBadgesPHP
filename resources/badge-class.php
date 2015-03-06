@@ -18,7 +18,6 @@ limitations under the License.
 Recieves badge activity id, returns badge class json.
 */
 include "../config.php";
-include "../includes/badges-lib.php";
 require ("../TinCanPHP/autoload.php");
 include "../includes/TinBadges.php";
 
@@ -32,6 +31,7 @@ if (isset($_GET["activity-id"])){
     die();
 }
 
+$util = new \TinBadges\Util();
 $lrs = new \TinBadges\RemoteLRS();
 $lrs
     ->setEndPoint($CFG->endpoint)
@@ -50,8 +50,8 @@ if ($activityDefResponse->success){
 
 echo json_encode(
     array(
-        "name" => getAppropriateLanguageMapValue($badgeDefinition->getName()->asVersion("1.0.0")),
-        "description" => getAppropriateLanguageMapValue($badgeDefinition->getDescription()->asVersion("1.0.0")),
+        "name" => $util->getAppropriateLanguageMapValue($badgeDefinition->getName()->asVersion("1.0.0")),
+        "description" => $util->getAppropriateLanguageMapValue($badgeDefinition->getDescription()->asVersion("1.0.0")),
         "image" => $badgeClassData["image"],
         "criteria" => $badgeClassData["criteria"],
         "issuer" => $badgeClassData["issuer"]

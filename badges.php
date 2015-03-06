@@ -62,7 +62,7 @@ $unqiueEarnStatements = $lrs->getStatementsWithUniqueActivitiesFromStatementQuer
         }
 
         if ($displayBadge == null) {
-            $assertion = statementToAssertion($unqiueEarnStatement);
+            $assertion = $baker->statementToAssertion($statement);
             $opts = array(
                   'http'=>array(
                         'header'=>"Accept-language: ". $_SERVER['HTTP_ACCEPT_LANGUAGE']
@@ -71,7 +71,7 @@ $unqiueEarnStatements = $lrs->getStatementsWithUniqueActivitiesFromStatementQuer
             $context = stream_context_create($opts);
             $badgeClass = json_decode(file_get_contents($unqiueEarnStatement->getObject()->getDefinition()->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["@id"], false, $context));
             $badgeImageURL = $badgeClass->image;
-            $displayBadge = bakeBadge($badgeImageURL, $assertion);
+            $displayBadge = $baker->bake($badgeImageURL, $assertion);
         } 
 
         echo "<img class='open-badge-100 pull-left' src='data:image/png;base64," . base64_encode($displayBadge) . "' />";

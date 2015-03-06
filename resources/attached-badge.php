@@ -20,7 +20,6 @@ returns the first Open Badge attachment as a base 64 encoded png image
 */
 include "../config.php";
 require ("../TinCanPHP/autoload.php");
-include "../includes/badges-lib.php";
 
 if (isset($_GET["statement"])){
     $statementId = urldecode($_GET["statement"]);

@@ -19,7 +19,16 @@ Recieves statement id querystring paramater, querries the LRS for a matching sta
 */
 include "../config.php";
 require ("../TinCanPHP/autoload.php");
-include "../includes/badges-lib.php";
+include "../includes/TinBadges.php";
+
+require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Signer/SignerInterface.php";
+require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Signer/PublicKey.php";
+require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Signer/RSA.php";
+require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Signer/RS256.php";
+require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Base64/Encoder.php";
+require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Base64/Base64UrlSafeEncoder.php";
+require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/JWT.php";
+require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/JWS.php";
 
 header('Content-Type: application/json');
 
@@ -36,22 +45,23 @@ if (isset($_GET["statement"])){
 * that this was too big a security risk. Each LRS or LRS-using badging application can easily implement this resource in 
 * order to support LRS-hosted badge assertions. 
 */
-
-$lrs = new \TinCan\RemoteLRS();
+$lrs = new \TinBadges\RemoteLRS();
+$baker = new \TinBadges\Baker();
 $lrs
     ->setEndPoint($CFG->endpoint)
     ->setAuth($CFG->login,$CFG->pass);
 
-$statementResponse = $lrs->retrieveStatement($statementId);
+$statementResponse = $lrs->retrieveStatement($statementId, array('attachments' => true));
 
 if ($statementResponse->success){
     $statement = $statementResponse->content;
-    if (verifyBadgeStatement($queryStatement)["success"]){
-        $assertion = statementToAssertion($statement);
+    if ($baker->verifyBadgeStatement($statement)["success"]){
+        $assertion = $baker->statementToAssertion($statement);
         echo json_encode($assertion, JSON_UNESCAPED_SLASHES);
     } else {
         //Signature did not verify
         //TODO: return whatever error code the OB spec demands?
+        var_dump($baker->verifyBadgeStatement($statement));
     }
 } else{
     //Statement not found. 
