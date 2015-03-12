@@ -18,9 +18,11 @@ limitations under the License.
 Recieves statement id and public key querystring paramaters, queries the LRS for a matching statement, 
 verifies that statement and returns a success status.
 */
-include "../config.php";
+require "../config.php";
 require ("../TinCanPHP/autoload.php");
-include "../includes/TinBadges.php";
+require ("../TinBadges/Baker.php");
+require ("../TinBadges/RemoteLRS.php");
+require ("../TinBadges/Util.php");
 
 //The below requires can be removed once the statement signing features have been merged into TinCanPHP
 require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Signer/SignerInterface.php";
@@ -32,7 +34,7 @@ require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Base64/Base64UrlSa
 require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/JWT.php";
 require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/JWS.php";
 
-if (isset($_GET["statement"])){
+if (isset($_GET["statement"])) {
     $statementId = urldecode($_GET["statement"]);
 } else {
     header("HTTP/1.1 400 Bad Request");
@@ -45,22 +47,22 @@ $baker = new \TinBadges\Baker();
 $lrs = new \TinBadges\RemoteLRS();
 $lrs
     ->setEndPoint($CFG->endpoint)
-    ->setAuth($CFG->readonly_login,$CFG->readonly_pass);
+    ->setAuth($CFG->readonly_login, $CFG->readonly_pass);
 
 $statementResponse = $lrs->retrieveStatement($statementId, array('attachments' => true));
 
 //var_dump($statementResponse->content);
 //var_dump(new \TinBadges\Statement($statementResponse->content->asVersion("1.0.0")));
 
-if ($statementResponse->success){
+if ($statementResponse->success) {
     $statement = $statementResponse->content;
     echo json_encode($baker->verifyBadgeStatement($statement), JSON_UNESCAPED_SLASHES);
-} else{
+} else {
     echo json_encode(
         array(
-            "success" => false, 
+            "success" => false,
             "reason" => 'Target statement not found.'
-        ), 
+        ),
         JSON_UNESCAPED_SLASHES
     );
 }

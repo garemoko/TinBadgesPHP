@@ -23,7 +23,7 @@ Receives a badge id, returns hard coded badge criteria as human readable plain t
 
 header('Content-Type: text/plain');
 
-if (isset($_GET["badge-id"])){
+if (isset($_GET["badge-id"])) {
     $badgeId = $_GET["badge-id"];
 } else {
     header("HTTP/1.1 400 Bad Request");
@@ -35,7 +35,7 @@ $badgesCriteria = array(
     "1" => "Criteria for badge one. Lorem Ipsum."
 );
 
-if (isset($badgesCriteria[$badgeId])){
+if (isset($badgesCriteria[$badgeId])) {
     echo $badgesCriteria[$badgeId];
 } else {
     header("HTTP/1.1 404 Not Found");

@@ -27,12 +27,12 @@ $queryCFG = array(
     "activity" => new \TinCan\Activity(array("id"=> "http://standard.openbadges.org/xapi/recipe/base/0")),
     "related_activities" => "true",
     //"limit" => 1, //Use this to test the "more" statements feature
-    "format"=>"canonical" 
+    "format"=>"canonical"
 );
 
 if ($CFG->rebakeBadgeToDisplay) {
     $queryCFG["attachments"] = "false";
-} else{
+} else {
     $queryCFG["attachments"] = "true";
 }
 
@@ -50,30 +50,40 @@ $unqiueEarnStatements = $lrs->getStatementsWithUniqueActivitiesFromStatementQuer
 <h3><?php echo $userName ?>'s Badges</h3>
 <p>You have earned these badges:</p>
 
-<?php 
-    foreach ($unqiueEarnStatements as $unqiueEarnStatement){
-        $displayBadge = null;
-        if (!$CFG->rebakeBadgeToDisplay && $unqiueEarnStatement->getAttachments() != null) {
-            foreach ($unqiueEarnStatement->getAttachments() as $attachment){
-                if ($attachment->getUsageType() == "http://standard.openbadges.org/xapi/attachment/badge.json"){
-                    $displayBadge = $attachment->getContent(); 
-                }
+<?php
+foreach ($unqiueEarnStatements as $unqiueEarnStatement) {
+    $displayBadge = null;
+    if (!$CFG->rebakeBadgeToDisplay && $unqiueEarnStatement->getAttachments() != null) {
+        foreach ($unqiueEarnStatement->getAttachments() as $attachment) {
+            if ($attachment->getUsageType() == "http://standard.openbadges.org/xapi/attachment/badge.json") {
+                $displayBadge = $attachment->getContent();
             }
         }
-
-        if ($displayBadge == null) {
-            $assertion = $baker->statementToAssertion($statement);
-            $opts = array(
-                  'http'=>array(
-                        'header'=>"Accept-language: ". $_SERVER['HTTP_ACCEPT_LANGUAGE']
-                  )
-            );
-            $context = stream_context_create($opts);
-            $badgeClass = json_decode(file_get_contents($unqiueEarnStatement->getObject()->getDefinition()->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["@id"], false, $context));
-            $badgeImageURL = $badgeClass->image;
-            $displayBadge = $baker->bake($badgeImageURL, $assertion);
-        } 
-
-        echo "<img class='open-badge-100 pull-left' src='data:image/png;base64," . base64_encode($displayBadge) . "' />";
     }
+
+    if ($displayBadge == null) {
+        $assertion = $baker->statementToAssertion($statement);
+        $opts = array(
+              'http'=>array(
+                    'header'=>"Accept-language: ". $_SERVER['HTTP_ACCEPT_LANGUAGE']
+              )
+        );
+        $context = stream_context_create($opts);
+        $badgeClass = json_decode(
+            file_get_contents(
+                $unqiueEarnStatement
+                    ->getObject()
+                    ->getDefinition()
+                    ->getExtensions()
+                    ->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["@id"],
+                false,
+                $context
+            )
+        );
+        $badgeImageURL = $badgeClass->image;
+        $displayBadge = $baker->bake($badgeImageURL, $assertion);
+    }
+
+    echo "<img class='open-badge-100 pull-left' src='data:image/png;base64," . base64_encode($displayBadge) . "' />";
+}
 ?>

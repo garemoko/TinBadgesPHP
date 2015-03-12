@@ -17,13 +17,15 @@ limitations under the License.
 ### badge-image.php
 Recieves badge activity id, returns badge source image. 
 */
-include "../config.php";
+require "../config.php";
 require ("../TinCanPHP/autoload.php");
-include "../includes/TinBadges.php";
+require ("../TinBadges/Baker.php");
+require ("../TinBadges/RemoteLRS.php");
+require ("../TinBadges/Util.php");
 
 header('Content-Type: image/png');
 
-if (isset($_GET["activity-id"])){
+if (isset($_GET["activity-id"])) {
     $badgeId = urldecode($_GET["activity-id"]);
 } else {
     header("HTTP/1.1 400 Bad Request");
@@ -34,18 +36,17 @@ if (isset($_GET["activity-id"])){
 $lrs = new \TinBadges\RemoteLRS();
 $lrs
     ->setEndPoint($CFG->endpoint)
-    ->setAuth($CFG->login,$CFG->pass);
+    ->setAuth($CFG->login, $CFG->pass);
 
 $getActivityProfileResponse = $lrs->retrieveActivityProfile(
-    array("id" => $badgeId), 
+    array("id" => $badgeId),
     "http://standard.openbadges.org/xapi/activiy-profile/badgeimage.json"
 );
 
-if ($getActivityProfileResponse->success){
+if ($getActivityProfileResponse->success) {
     echo $getActivityProfileResponse->content->getContent();
 } else {
     header("HTTP/1.1 404 Not Found");
     http_response_code(404);
     die();
 }
-

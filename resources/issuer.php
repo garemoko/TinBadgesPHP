@@ -17,14 +17,16 @@ limitations under the License.
 ### issuer.php
 Recieves issuer activity id, returns isuser json.
 */
-include "../config.php";
-include "../includes/badges-lib.php";
+v "../config.php";
+require "../includes/badges-lib.php";
 require ("../TinCanPHP/autoload.php");
-include "../includes/TinBadges.php";
+require ("../TinBadges/Baker.php");
+require ("../TinBadges/RemoteLRS.php");
+require ("../TinBadges/Util.php");
 
 header('Content-Type: application/json');
 
-if (isset($_GET["activity-id"])){
+if (isset($_GET["activity-id"])) {
     $issuerId = urldecode($_GET["activity-id"]);
 } else {
     header("HTTP/1.1 400 Bad Request");
@@ -36,13 +38,15 @@ $util = new \TinBadges\Util();
 $lrs = new \TinBadges\RemoteLRS();
 $lrs
     ->setEndPoint($CFG->endpoint)
-    ->setAuth($CFG->login,$CFG->pass);
+    ->setAuth($CFG->login, $CFG->pass);
 
 $activityDefResponse = $lrs->retrieveFullActivityObject($issuerId);
 
-if ($activityDefResponse->success){
+if ($activityDefResponse->success) {
     $badgeDefinition = $activityDefResponse->content->getDefinition();
-    $badgeClassData = $badgeDefinition->getExtensions()->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"];
+    $badgeClassData = $badgeDefinition
+        ->getExtensions()
+        ->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"];
 } else {
     header("HTTP/1.1 404 Not Found");
     http_response_code(404);
@@ -54,6 +58,6 @@ echo json_encode(
         "name" => $util->getAppropriateLanguageMapValue($badgeDefinition->getName()->asVersion("1.0.0")),
         "description" => $util->getAppropriateLanguageMapValue($badgeDefinition->getDescription()->asVersion("1.0.0")),
         "url" => $issuerId
-    ), 
+    ),
     JSON_UNESCAPED_SLASHES
 );
