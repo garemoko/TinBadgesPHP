@@ -18,8 +18,11 @@ limitations under the License.
 Receives a badge id, returns hard coded badge criteria as human readable plain text. 
 */
 
-//TODO: something interesting with criteria. Perhaps it is a list of template statements? 
-//Perhaps use LRMI (http://www.lrmi.net/) as recommended in the Open Badges spec?
+//TODO: return content based on the requested content-type. 
+    //If application/json is requested, return JSON representing Tin Can statements to be completed
+    //Else return nicely formatted HTML
+        //with LRMI tags (http://www.lrmi.net/)
+//TODO: do the same for evidence. 
 
 header('Content-Type: text/plain');
 

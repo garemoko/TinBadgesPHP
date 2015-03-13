@@ -74,17 +74,13 @@ Displays a stream of badge statements including the badge image and signed state
     Config.actor = { "mbox":["<?php echo $userEmail; ?>"], "name":["<?php echo $userName ?>"] };
 
     $(document).ready(function() {
-        TC_VIEWER = new TINCAN.Viewer();
+        "use strict";
+        var TC_VIEWER = new TINCAN.Viewer();
         TC_VIEWER.pageInitialize();
         TC_VIEWER.searchStatements();
-        $(".statement").each(function(index){
+        $(".statement").each(function(){
             console.log("statement");
-            displayAttachments($(this));
         });
-
     });
 
-    function displayAttachments(statementElement) {
-        var statement = new TinCan.Statement(statementElement.next(".tc_rawdata").children("pre").text());
-    }
 </script>

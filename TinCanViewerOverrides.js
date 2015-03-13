@@ -22,151 +22,31 @@ Overrides to functions within the TinCanStatementViewer submodules to:
 suitable for this prototype.
 3. Add additional functionality such as the display of Badge images and Statement signature
 verification results. 
+4. Remove some code for handling parts of statements that don't feature in the Open Badges recipe
 */
 
-//TODO: Not all the functions within the renderStatments class have been modified. 
-//  Check which have been modified and only override these. 
 TINCAN.Viewer.prototype.renderStatements = function (statements) {
+    "use strict";
     var allStmtStr,
         i,
-        dt,
-        aDate,
         stmtStr,
         stmt,
         verb,
-        objDesc,
         answer,
-        activityType;
-
-
-    function truncateString (str, length) {
-        if (str === null || str.length < 4 || str.length <= length) {
-            return str;
-        }
-        return str.substr(0, length - 3) + '...';
-    }
-
-    function getResponseText (stmt) {
-        var response,
-            objDef,
-            componentName = null,
-            components,
-            responses,
-            responseStr = [],
-            first = true,
-            responseId,
-            i,
-            j,
-            source,
-            target,
-            responseParts;
-
-        if (stmt.result === null || stmt.result.response === null) {
-            return "";
-        }
-        response = stmt.result.response;
-
-        if (stmt.target === null ||
-            stmt.target.objectType !== "Activity" ||
-            stmt.target.definition === null ||
-            stmt.target.definition.type !== "cmi.interaction" ||
-            stmt.target.definition.interactionType === null
-        ) {
-            return response;
-        }
-        objDef = stmt.target.definition;
-
-        // TODO: move the splitting on [,] of the values into TinCanJS
-        if (objDef.interactionType === "matching") {
-            if (objDef.source !== null &&
-                objDef.source.length > 0 &&
-                objDef.target !== null &&
-                objDef.target.length > 0
-            ) {
-                source = objDef.source;
-                target = objDef.target;
-
-                responses = response.split("[,]");
-
-                for (i = 0; i < responses.length; i += 1) {
-                    responseParts = responses[i].split("[.]");
-
-                    for (j = 0; j < source.length; j += 1) {
-                        if (responseParts[0] === source[j].id) {
-                            if (!first) {
-                                responseStr.push(", ");
-                            }
-                            responseStr.push(source[j].getLangDictionaryValue("description"));
-                            first = false;
-                        }
-                    }
-                    for (j = 0; j < target.length; j += 1) {
-                        if (responseParts[1] === target[j].id) {
-                            responseStr.push(" -> ");
-                            responseStr.push(target[j].getLangDictionaryValue("description"));
-                        }
-                    }
-                }
-            }
-        } else {
-            if (objDef.interactionType === "choice" || objDef.interactionType === "sequencing") {
-                componentName = "choices";
-            }
-            else if (objDef.interactionType === "likert") {
-                componentName = "scale";
-            }
-            else if (objDef.interactionType === "performance") {
-                componentName = "steps";
-            }
-
-            if (componentName !== null) {
-                components = objDef[componentName];
-
-                if (components !== null && components.length > 0){
-                    responses = response.split("[,]");
-
-                    for (i = 0; i < responses.length; i += 1) {
-                        for (j = 0; j < components.length; j += 1) {
-                            responseId = responses[i];
-                            if (objDef.interactionType === "performance"){
-                                responseId = responses[i].split("[.]")[0];
-                            }
-                            if (responseId === components[j].id) {
-                                if (!first) {
-                                    responseStr.push(", ");
-                                }
-                                responseStr.push(components[j].getLangDictionaryValue("description"));
-
-                                if (objDef.interactionType === "performance") {
-                                    responseStr.push(" -> ");
-                                    responseStr.push(responses[i].split("[.]")[1]);
-                                }
-                                first = false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if (responseStr.length > 0) {
-            return responseStr.join("");
-        }
-
-        return response;
-    }
+        activityType,
+        rawStatementObj;
 
     function displayBadge(statementId){
         return function(badgePNG) {
           //display image
             var statmentObj = $("[tcid='" + statementId + "']");
-            var imgHTML = "<img class='open-badge-50' src='data:image/png;base64," + badgePNG + "' />"
+            var imgHTML = "<img class='open-badge-50' src='data:image/png;base64," + badgePNG + "' />";
             if (statmentObj.has( ".verify-label" ).length){
                 statmentObj.children( ".verify-label" ).before(imgHTML);
             } else {
                 statmentObj.append(imgHTML);
             }
-        }
+        };
     }
 
     function renderVerification(statementId){
@@ -174,20 +54,34 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
         return function(verifyResult) {
             if (verifyResult.success) {
                 var verifyLabel = $("<span class='label label-success verify-label'>Signature Verified: </span>"),
-                verifyURLLabel = $("<span class='label label-default'>"+ verifyResult.certLocation + "</span>")
+                verifyURLLabel = $("<span class='label label-default'>"+ verifyResult.certLocation + "</span>");
                 $("[tcid='" + statementId + "']").append(verifyLabel);
                 $("[tcid='" + statementId + "']").append(verifyURLLabel);
                 $("[tcid_data='" + statementId + "']").append("<pre>"+verifyResult.cert+"</pre>");
             } else {
                 $("[tcid='" + statementId + "']").append("<span class='label label-danger verify-label'>Invalid Signature</span>");
             }
-        }
+        };
     }
 
-    function renderUnableToVerifyV(statementId){
+    function renderUnableToVerify(statementId){
         //TODO: render a revealable raw certifcate box using verifyResult.cert
-        return function(data) {
+        return function() {
             $("[tcid='" + statementId + "']").append("<span class='label label-warning verify-label'>Unable to verify signature.</span>");
+        };
+    }
+
+    function processAttachment(index, attachment){
+        if (attachment.usageType === "http://standard.openbadges.org/xapi/attachment/badge.json"){
+            //TODO: validate the image type is image/PNG
+            //Try to get image from content (via PHP as attachments not supported by TinCanJS yet)
+            $.get( "resources/attached-badge.php?statement=" + stmt.id, displayBadge(stmt.id))
+              .fail(function() {
+                //TODO: if content not found, try fileurl if present
+              });
+        } else if (attachment.usageType === "http://adlnet.gov/expapi/attachments/signature"){
+            $.get( "resources/verify-signed-statement.php?statement=" + stmt.id, renderVerification(stmt.id))
+              .fail(renderUnableToVerify(stmt.id));
         }
     }
 
@@ -229,16 +123,6 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
 
             if (typeof stmt.target.definition !== "undefined" && stmt.target.definition !== null) {
                 activityType = stmt.target.definition.type;
-                if (activityType !== null && (activityType === "question" || activityType.indexOf("interaction") >= 0)) {
-                    if (stmt.result !== null) {
-                        if (stmt.result.success !== null) {
-                            verb = (stmt.result.success ? "correctly " : "incorrectly ") + verb;
-                        }
-                        if (stmt.result.response !== null) {
-                            answer = " with response '" + this.escapeHTML(truncateString(getResponseText(stmt), 30)) + "' ";
-                        }
-                    }
-                }
             }
 
             stmtStr.push(" <span class='verb'>" + this.escapeHTML(verb) + "</span> ");
@@ -254,19 +138,7 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
             }
             rawStatementObj = JSON.parse(stmt.originalJSON); //Until TinCanJS supports attachments
             if (rawStatementObj.hasOwnProperty("attachments") && rawStatementObj.attachments !== {}){
-                $.each(rawStatementObj.attachments, function(index, attachment){
-                    if (attachment.usageType == "http://standard.openbadges.org/xapi/attachment/badge.json"){
-                        //TODO: validate the image type is image/PNG
-                        //Try to get image from content (via PHP as attachments not supported by TinCanJS yet)
-                        $.get( "resources/attached-badge.php?statement=" + stmt.id, displayBadge(stmt.id))
-                          .fail(function() {
-                            //TODO: if content not found, try fileurl if present
-                          })
-                    } else if (attachment.usageType == "http://adlnet.gov/expapi/attachments/signature"){
-                        $.get( "resources/verify-signed-statement.php?statement=" + stmt.id, renderVerification(stmt.id))
-                          .fail(renderUnableToVerifyV(stmt.id));
-                    }
-                })
+                $.each(rawStatementObj.attachments, processAttachment);
             }
         }
         catch (error) {
@@ -292,6 +164,7 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
 };
 
 TINCAN.Viewer.prototype.pageInitialize = function () {
+    "use strict";
     var tcViewer = this,
     doRefresh = function () {
         $("#statementsLoading").show();
