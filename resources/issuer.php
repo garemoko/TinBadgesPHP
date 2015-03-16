@@ -31,6 +31,7 @@ if (isset($_GET["activity-id"])) {
 } else {
     header("HTTP/1.1 400 Bad Request");
     http_response_code(400);
+    echo("No badge id specified. You must specify a badge id with the activity-id querystring parameter.");
     die();
 }
 
@@ -50,6 +51,10 @@ if ($activityDefResponse->success) {
 } else {
     header("HTTP/1.1 404 Not Found");
     http_response_code(404);
+    echo(
+        "Issuer id ". $issuerId . " not found.<br/> "
+        ."LRS response: " . $statementResponse->httpResponse["status"] . " " . $statementResponse->content
+    );
     die();
 }
 

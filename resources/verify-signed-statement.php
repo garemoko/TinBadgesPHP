@@ -39,6 +39,7 @@ if (isset($_GET["statement"])) {
 } else {
     header("HTTP/1.1 400 Bad Request");
     http_response_code(400);
+    echo("No statement id specified. You must specify a statement id with the statement querystring parameter.");
     die();
 }
 
@@ -58,6 +59,8 @@ if ($statementResponse->success) {
     $statement = $statementResponse->content;
     echo json_encode($baker->verifyBadgeStatement($statement), JSON_UNESCAPED_SLASHES);
 } else {
+    header("HTTP/1.1 404 Not Found");
+    http_response_code(404);
     echo json_encode(
         array(
             "success" => false,

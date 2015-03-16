@@ -139,7 +139,8 @@ class RemoteLRS extends \TinCan\RemoteLRS
         return $this->getStatementsWithUniqueActivitiesFromStatementQuery($queryCFG);
     }
 
-    //Private function from TinCanPHP - modified
+    //Private function from TinCanPHP - modified to allow headers and params to be passed as
+    //part of the query options.
     private function _queryStatementsRequestParams($query)
     {
         $result = array();

@@ -33,13 +33,12 @@ require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/Base64/Base64UrlSa
 require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/JWT.php";
 require_once "../TinCanPHP/vendor/namshi/jose/src/Namshi/JOSE/JWS.php";
 
-header('Content-Type: application/json');
-
 if (isset($_GET["statement"])) {
     $statementId = urldecode($_GET["statement"]);
 } else {
     header("HTTP/1.1 400 Bad Request");
     http_response_code(400);
+    echo("No statement id specified. You must specify a statement id with the statement querystring parameter.");
     die();
 }
 
@@ -58,15 +57,28 @@ $statementResponse = $lrs->retrieveStatement($statementId, array('attachments' =
 
 if ($statementResponse->success) {
     $statement = $statementResponse->content;
-    if ($baker->verifyBadgeStatement($statement)["success"]) {
+    $verifyResponse = $baker->verifyBadgeStatement($statement);
+    if ($verifyResponse["success"]) {
+        header('Content-Type: application/json');
         $assertion = $baker->statementToAssertion($statement);
         echo json_encode($assertion, JSON_UNESCAPED_SLASHES);
     } else {
         //Signature did not verify
-        //TODO: return whatever error code the OB spec demands?
-        var_dump($baker->verifyBadgeStatement($statement));
+        header("HTTP/1.1 404 Not Found");
+        http_response_code(404);
+        echo(
+            "A statement containing the badge assertion was found, but its signature could not be verified. Reason: "
+            .$verifyResponse["success"]
+            ." The certificate used for verification was:<br/> "
+            .$verifyResponse["cert"]
+        );
     }
 } else {
     //Statement not found.
-    //TODO: return whatever error code the OB spec demands?
+    header("HTTP/1.1 404 Not Found");
+    http_response_code(404);
+    echo(
+        "A statement id ". $statementId . " not found.<br/> "
+        ."LRS response: " . $statementResponse->httpResponse["status"] . " " . $statementResponse->content
+    );
 }

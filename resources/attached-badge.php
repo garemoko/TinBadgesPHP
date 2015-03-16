@@ -26,13 +26,14 @@ if (isset($_GET["statement"])) {
 } else {
     header("HTTP/1.1 400 Bad Request");
     http_response_code(400);
+    echo("No statement id specified. You must specify a statement id with the statement querystring parameter.");
     die();
 }
 
 /* 
 I considered including LRS detals in the assertion querystring so this page could work with any LRS but concluded 
 that this was too big a security risk. Each LRS or LRS-using badging application can easily implement 
-this resource in  order to support LRS-hosted badge assertions. 
+this resource in order to support LRS-hosted badge assertions. 
 */
 
 $lrs = new \TinCan\RemoteLRS();
@@ -47,13 +48,28 @@ if ($statementResponse->success) {
     $attachments = $statementResponse->content->getAttachments();
     foreach ($attachments as $attachment) {
         if ($attachment->getUsageType() == "http://standard.openbadges.org/xapi/attachment/badge.json") {
-            //TODO: validate the content type
-            header('Content-Type: image/png');
+            //TODO: validate the content type is a png
+
+            //Return a base64 encoded image to be displayed in an HTML page.
             echo base64_encode($attachment->getContent());
+
+            //To return an unencoded image, use:
+            //header('Content-Type: image/png');
+            //echo $attachment->getContent();
+
             die();
         }
     }
-    //TODO: error - No attachment of type "http://standard.openbadges.org/xapi/attachment/badge.json" found.
+    header("HTTP/1.1 404 Not Found");
+    http_response_code(404);
+    echo(
+        "A statement id ". $statementId . " does not have an attached Open Badge."
+    );
 } else {
-    //TODO: error - Statement not found.
+    header("HTTP/1.1 404 Not Found");
+    http_response_code(404);
+    echo(
+        "A statement id ". $statementId . " not found.<br/> "
+        ."LRS response: " . $statementResponse->httpResponse["status"] . " " . $statementResponse->content
+    );
 }

@@ -32,15 +32,15 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
         stmtStr,
         stmt,
         verb,
-        answer,
-        activityType,
         rawStatementObj;
 
     function displayBadge(statementId){
         return function(badgePNG) {
           //display image
-            var statmentObj = $("[tcid='" + statementId + "']");
+            //var badgebase64 = Base64.encode(badgePNG);
+            //var imgHTML = "<img class='open-badge-50' src='data:image/png;base64," + badgebase64 + "' />";
             var imgHTML = "<img class='open-badge-50' src='data:image/png;base64," + badgePNG + "' />";
+            var statmentObj = $("[tcid='" + statementId + "']");
             if (statmentObj.has( ".verify-label" ).length){
                 statmentObj.children( ".verify-label" ).before(imgHTML);
             } else {
@@ -104,38 +104,11 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
                     (stmt.actor !== null ? this.renderActor(stmt.actor) : "No Actor") + 
                 "</span> ");
 
-            if (stmt.context !== null &&
-                stmt.context.extensions !== null &&
-                typeof stmt.context.extensions.verb !== "undefined"
-            ) {
-                verb = stmt.context.extensions.verb;
-            } else {
-                verb = stmt.verb + "";
-            }
-
-            if (verb === "interacted") {
-                verb = "interacted with";
-            } else if (stmt.inProgress === true) {
-                verb = verb + " (in progress)";
-            }
-
-            answer = null;
-
-            if (typeof stmt.target.definition !== "undefined" && stmt.target.definition !== null) {
-                activityType = stmt.target.definition.type;
-            }
+            verb = stmt.verb + "";
 
             stmtStr.push(" <span class='verb'>" + this.escapeHTML(verb) + "</span> ");
             stmtStr.push(" <span class='object'>'" + this.escapeHTML(stmt.target) + "'</span> ");
-            stmtStr.push(answer !== null ? answer : "");
 
-            if (stmt.result !== null && stmt.result.score !== null) {
-                if (stmt.result.score.scaled !== null) {
-                    stmtStr.push(" with score <span class='score'>" + Math.round((stmt.result.score.scaled * 100.0)) + "%</span>");
-                } else if (stmt.result.score.raw !== null) {
-                    stmtStr.push(" with score <span class='score'>" + stmt.result.score.raw + "</span>");
-                }
-            }
             rawStatementObj = JSON.parse(stmt.originalJSON); //Until TinCanJS supports attachments
             if (rawStatementObj.hasOwnProperty("attachments") && rawStatementObj.attachments !== {}){
                 $.each(rawStatementObj.attachments, processAttachment);

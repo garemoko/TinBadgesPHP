@@ -16,6 +16,8 @@ limitations under the License.
 
 ### badge-class.php
 Recieves querystring paramaters, returns hard coded badge class json.
+This is used to get data into the LRS inititally.
+Use badge-class.php to get this data from the LRS for subsequent use.
 */
 require "../config.php";
 require "../includes/badge-definitions.php";
@@ -26,6 +28,7 @@ if (isset($_GET["badge-id"])) {
 } else {
     header("HTTP/1.1 400 Bad Request");
     http_response_code(400);
+    echo("No badge id specified. You must specify a badge id with the badge-id querystring parameter.");
     die();
 }
 
@@ -35,5 +38,8 @@ if (isset($badges[$badgeId])) {
 } else {
     header("HTTP/1.1 404 Not Found");
     http_response_code(404);
+    echo(
+        "Definition for badge id ". $badgeId . " not found.<br/> "
+    );
     die();
 }

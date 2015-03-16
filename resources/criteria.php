@@ -30,6 +30,7 @@ if (isset($_GET["badge-id"])) {
     $badgeId = $_GET["badge-id"];
 } else {
     header("HTTP/1.1 400 Bad Request");
+    echo("No badge id specified. You must specify a badge id with the badge-id querystring parameter.");
     http_response_code(400);
     die();
 }
@@ -43,5 +44,8 @@ if (isset($badgesCriteria[$badgeId])) {
 } else {
     header("HTTP/1.1 404 Not Found");
     http_response_code(404);
+    echo(
+        "Criteria for badge id ". $badgeId . " not found.<br/> "
+    );
     die();
 }
