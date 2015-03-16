@@ -41,7 +41,7 @@ $lrs
 
 $getActivityProfileResponse = $lrs->retrieveActivityProfile(
     array("id" => $badgeId),
-    "http://standard.openbadges.org/xapi/activiy-profile/badgeimage.json"
+    "http://specification.openbadges.org/xapi/activiy-profile/badgeimage.json"
 );
 
 if ($getActivityProfileResponse->success) {

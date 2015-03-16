@@ -67,7 +67,7 @@ $statement = new \TinCan\statement(
             )
         ),
         "verb" => array(
-            "id" => "http://standard.openbadges.org/xapi/verbs/defined-issuer.json",
+            "id" => "http://specification.openbadges.org/xapi/verbs/defined-issuer.json",
             "display" => array(
                 "en" => "defined Open Badge issuer",
             ),
@@ -78,7 +78,7 @@ $statement = new \TinCan\statement(
                 "category" => array(
                     array(
     //TODO: Host metadata at standard.openbadges.org and update this to version 1 for release version of recipe
-                        "id" => "http://standard.openbadges.org/xapi/recipe/base/0",
+                        "id" => "http://specification.openbadges.org/xapi/recipe/base/0_0_1",
                         "definition" => array(
                             "type" => "http://id.tincanapi.com/activitytype/recipe"
                         )
@@ -128,7 +128,7 @@ foreach ($badgeList as $badge => $badgeData) {
                 )
             ),
             "verb" => array(
-                "id" => "http://standard.openbadges.org/xapi/verbs/created-badge-class.json",
+                "id" => "http://specification.openbadges.org/xapi/verbs/created-badge-class.json",
                 "display" => array(
                     "en" => "created Open Badge",
                 ),
@@ -139,7 +139,7 @@ foreach ($badgeList as $badge => $badgeData) {
                     "category" => array(
                         array(
         //TODO: Host metadata at standard.openbadges.org and update this to version 1 for release version of recipe
-                            "id" => "http://standard.openbadges.org/xapi/recipe/base/0",
+                            "id" => "http://specification.openbadges.org/xapi/recipe/base/0_0_1",
                             "definition" => array(
                                 "type" => "http://id.tincanapi.com/activitytype/recipe"
                             )
@@ -172,14 +172,14 @@ foreach ($badgeList as $badge => $badgeData) {
     //whenever a client looks up the badge image
     $getActivityProfileImageResponse = $lrs->retrieveActivityProfile(
         $badgeActivity,
-        "http://standard.openbadges.org/xapi/activiy-profile/badgeimage.json"
+        "http://specification.openbadges.org/xapi/activiy-profile/badgeimage.json"
     );
     if ($getActivityProfileImageResponse->success) {
         $activityProfileImageEtag = $getActivityProfileImageResponse->content->getEtag();
 
         $setActivityProfileImageResponse = $lrs->saveActivityProfile(
             $badgeActivity,
-            "http://standard.openbadges.org/xapi/activiy-profile/badgeimage.json",
+            "http://specification.openbadges.org/xapi/activiy-profile/badgeimage.json",
             file_get_contents($badgeData["sourceImage"]),
             array(
                 "etag" => $activityProfileImageEtag,
@@ -203,14 +203,14 @@ foreach ($badgeList as $badge => $badgeData) {
     //and can be used to transmit bagde criteria with badges between systems
     $getActivityProfileCriteriaResponse = $lrs->retrieveActivityProfile(
         $badgeActivity,
-        "http://standard.openbadges.org/xapi/activiy-profile/badgecriteria.json"
+        "http://specification.openbadges.org/xapi/activiy-profile/badgecriteria.json"
     );
     if ($getActivityProfileCriteriaResponse ->success) {
         $activityProfileCriteriaEtag = $getActivityProfileCriteriaResponse->content->getEtag();
 
         $setActivityProfileCriteriaResponse = $lrs->saveActivityProfile(
             $badgeActivity,
-            "http://standard.openbadges.org/xapi/activiy-profile/badgecriteria.json",
+            "http://specification.openbadges.org/xapi/activiy-profile/badgecriteria.json",
             json_encode($badgeData["badgeCriteria"]),
             array(
                 "etag" => $activityProfileCriteriaEtag,

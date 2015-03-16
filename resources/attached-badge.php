@@ -47,7 +47,7 @@ $statementResponse = $lrs->retrieveStatement($statementId, array('attachments' =
 if ($statementResponse->success) {
     $attachments = $statementResponse->content->getAttachments();
     foreach ($attachments as $attachment) {
-        if ($attachment->getUsageType() == "http://standard.openbadges.org/xapi/attachment/badge.json") {
+        if ($attachment->getUsageType() == "http://specification.openbadges.org/xapi/attachment/badge.json") {
             //TODO: validate the content type is a png
 
             //Return a base64 encoded image to be displayed in an HTML page.

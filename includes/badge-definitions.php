@@ -26,7 +26,7 @@ $badgeList = array(
             "description" => array("en-US"=>"The first example Tin Badge"),
             "type" => "http://activitystrea.ms/schema/1.0/badge",
             "extensions" => array(
-                "http://standard.openbadges.org/xapi/extensions/badgeclass.json" => array(
+                "http://specification.openbadges.org/xapi/extensions/badgeclass.json" => array(
                     "@id" => $CFG->wwwroot . "/resources/badge-class.php?activity-id="
                         . urlencode($CFG->wwwroot . "/resources/badge-defintion.php?badge-id=1"),
                     "image" => $CFG->wwwroot . "/resources/badge-image.php?activity-id="
@@ -55,7 +55,7 @@ $badgeList = array(
             "description" => array("en-US"=>"The second example Tin Badge"),
             "type" => "http://activitystrea.ms/schema/1.0/badge",
             "extensions" => array(
-                "http://standard.openbadges.org/xapi/extensions/badgeclass.json" => array(
+                "http://specification.openbadges.org/xapi/extensions/badgeclass.json" => array(
                     "@id" => $CFG->wwwroot . "/resources/badge-class.php?activity-id="
                         . urlencode($CFG->wwwroot . "/resources/badge-defintion.php?badge-id=2"),
                     "image" => $CFG->wwwroot . "/resources/badge-image.php?activity-id="

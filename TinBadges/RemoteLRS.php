@@ -123,10 +123,10 @@ class RemoteLRS extends \TinCan\RemoteLRS
         $queryCFG = array(
             "verb" => new \TinCan\Verb(
                 array(
-                    "id"=> "http://standard.openbadges.org/xapi/verbs/created-badge-class.json"
+                    "id"=> "http://specification.openbadges.org/xapi/verbs/created-badge-class.json"
                 )
             ),
-            "activity" => new \TinCan\Activity(array("id"=> "http://standard.openbadges.org/xapi/recipe/base/0")),
+            "activity" => new \TinCan\Activity(array("id"=> "http://specification.openbadges.org/xapi/recipe/base/0_0_1")),
             "related_activities" => "true",
             //"limit" => 1, //Use this to test the "more" statements feature
             "format"=>"canonical",

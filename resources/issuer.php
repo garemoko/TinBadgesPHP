@@ -47,7 +47,7 @@ if ($activityDefResponse->success) {
     $badgeDefinition = $activityDefResponse->content->getDefinition();
     $badgeClassData = $badgeDefinition
         ->getExtensions()
-        ->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"];
+        ->asVersion("1.0.0")["http://specification.openbadges.org/xapi/extensions/badgeclass.json"];
 } else {
     header("HTTP/1.1 404 Not Found");
     http_response_code(404);

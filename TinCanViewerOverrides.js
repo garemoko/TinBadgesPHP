@@ -72,7 +72,7 @@ TINCAN.Viewer.prototype.renderStatements = function (statements) {
     }
 
     function processAttachment(index, attachment){
-        if (attachment.usageType === "http://standard.openbadges.org/xapi/attachment/badge.json"){
+        if (attachment.usageType === "http://specification.openbadges.org/xapi/attachment/badge.json"){
             //TODO: validate the image type is image/PNG
             //Try to get image from content (via PHP as attachments not supported by TinCanJS yet)
             $.get( "resources/attached-badge.php?statement=" + stmt.id, displayBadge(stmt.id))

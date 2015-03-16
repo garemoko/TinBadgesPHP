@@ -202,7 +202,7 @@ if (isset($_POST["activity-id"])) {
                 "name"=> $userName
             ),
             "verb" => array(
-                "id" => "http://standard.openbadges.org/xapi/verbs/earned.json",
+                "id" => "http://specification.openbadges.org/xapi/verbs/earned.json",
                 "display" => array(
                     "en" => "earned",
                 ),
@@ -210,7 +210,7 @@ if (isset($_POST["activity-id"])) {
             "object" => $badgeActivity,
             "result" => array(
                 "extensions" => array(
-                    "http://standard.openbadges.org/xapi/extensions/badgeassertion.json" => array(
+                    "http://specification.openbadges.org/xapi/extensions/badgeassertion.json" => array(
                         "@id" => $CFG->wwwroot . "/resources/assertions.php?statement=" . urlencode($statementId)
                     )
                 )
@@ -221,7 +221,7 @@ if (isset($_POST["activity-id"])) {
                         //TODO: Host metadata at standard.openbadges.org and update this to
                             //version 1 for release version of recipe
                         array(
-                            "id" => "http://standard.openbadges.org/xapi/recipe/base/0",
+                            "id" => "http://specification.openbadges.org/xapi/recipe/base/0_0_1",
                             "definition" => array(
                                 "type" => "http://id.tincanapi.com/activitytype/recipe"
                             )
@@ -239,7 +239,7 @@ if (isset($_POST["activity-id"])) {
     $assertion = $baker->statementToAssertion($statement);
 
     $bagdeImageURL = $badgeList[$badgeId]->getExtensions()
-        ->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["image"];
+        ->asVersion("1.0.0")["http://specification.openbadges.org/xapi/extensions/badgeclass.json"]["image"];
     $badgePNG = $baker->bake($bagdeImageURL, $assertion);
 
     //echo ("<img src='data:image/png;base64,".base64_encode($badgePNG)."'>");
@@ -249,7 +249,7 @@ if (isset($_POST["activity-id"])) {
             array(
             "content" => $badgePNG,
             "contentType" => "image/png",
-            "usageType" => "http://standard.openbadges.org/xapi/attachment/badge.json",
+            "usageType" => "http://specification.openbadges.org/xapi/attachment/badge.json",
             "display" => $badgeList[$badgeId]->getName()
             )
         )
@@ -292,7 +292,7 @@ if (isset($_POST["activity-id"])) {
                 ?>
                 <div class="col-md-3 text-center">
                     <img src="<?php echo $badgeDefinition->getExtensions()
-                        ->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["image"];
+                        ->asVersion("1.0.0")["http://specification.openbadges.org/xapi/extensions/badgeclass.json"]["image"];
                         ?>" class="open-badge-150 center-block">
                     <form action="earn.php" method="post">
                         <input type="hidden" class="form-control" id="name" name="name" 

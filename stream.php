@@ -44,7 +44,7 @@ Displays a stream of badge statements including the badge image and signed state
     <input type="hidden" id="agentProperty" value="mbox" />
     <input id="agentValue" type="hidden" value="">
     <input id="verb1" type="hidden" value="">
-    <input id="activityId1" type="hidden" value="http://standard.openbadges.org/xapi/recipe/base/0">
+    <input id="activityId1" type="hidden" value="http://specification.openbadges.org/xapi/recipe/base/0_0_1">
     <input id="format" type="hidden" value="canonical">
     <input id="since1" type="hidden" value="">
     <input id="until1" type="hidden" value="">

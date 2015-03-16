@@ -67,11 +67,11 @@ class Baker
                 "salt" => $CFG->badge_salt
             ),
             "badge" => $statement->getObject()->getDefinition()->getExtensions()
-                ->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["@id"],
+                ->asVersion("1.0.0")["http://specification.openbadges.org/xapi/extensions/badgeclass.json"]["@id"],
             "verify" => array(
                 "type" => "hosted",
                 "url" => $statement->getResult()->getExtensions()
-                    ->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeassertion.json"]["@id"],
+                    ->asVersion("1.0.0")["http://specification.openbadges.org/xapi/extensions/badgeassertion.json"]["@id"],
             ),
             "issuedOn" => $statement->getTimestamp()
             //TODO: (optional) "evidence" =>,

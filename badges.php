@@ -23,8 +23,8 @@ Displays all Open Badges earned by the user in a dashboard. These are downloadab
 
 $queryCFG = array(
     "agent" => new \TinCan\Agent(array("mbox"=> "mailto:".$userEmail)),
-    "verb" => new \TinCan\Verb(array("id"=> "http://standard.openbadges.org/xapi/verbs/earned.json")),
-    "activity" => new \TinCan\Activity(array("id"=> "http://standard.openbadges.org/xapi/recipe/base/0")),
+    "verb" => new \TinCan\Verb(array("id"=> "http://specification.openbadges.org/xapi/verbs/earned.json")),
+    "activity" => new \TinCan\Activity(array("id"=> "http://specification.openbadges.org/xapi/recipe/base/0_0_1")),
     "related_activities" => "true",
     //"limit" => 1, //Use this to test the "more" statements feature
     "format"=>"canonical"
@@ -55,7 +55,7 @@ foreach ($unqiueEarnStatements as $unqiueEarnStatement) {
     $displayBadge = null;
     if (!$CFG->rebakeBadgeToDisplay && $unqiueEarnStatement->getAttachments() != null) {
         foreach ($unqiueEarnStatement->getAttachments() as $attachment) {
-            if ($attachment->getUsageType() == "http://standard.openbadges.org/xapi/attachment/badge.json") {
+            if ($attachment->getUsageType() == "http://specification.openbadges.org/xapi/attachment/badge.json") {
                 $displayBadge = $attachment->getContent();
             }
         }
@@ -75,7 +75,7 @@ foreach ($unqiueEarnStatements as $unqiueEarnStatement) {
                     ->getObject()
                     ->getDefinition()
                     ->getExtensions()
-                    ->asVersion("1.0.0")["http://standard.openbadges.org/xapi/extensions/badgeclass.json"]["@id"],
+                    ->asVersion("1.0.0")["http://specification.openbadges.org/xapi/extensions/badgeclass.json"]["@id"],
                 false,
                 $context
             )
